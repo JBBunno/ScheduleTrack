@@ -706,10 +706,10 @@ async function loadAll() {
   s.forEach(r => { statuses[r.taskId] = { status: r.status, userName: r.userName }; });
   if (DEMO_MODE) Object.entries(demoStatuses).forEach(([id,v]) => { statuses[id] = v; });
 
-  // Compute weeks out
-  const start = new Date(config.startDate);
-  const now = new Date();
-  weeksOut = Math.round((start - now) / (7 * 24 * 60 * 60 * 1000));
+  // Compute weeks out — parse as local date to avoid UTC offset shifting the day
+  const [sy, sm, sd] = (config.startDate || '2099-01-01').split('-').map(Number);
+  const start = new Date(sy, sm - 1, sd);
+  weeksOut = Math.round((start - new Date()) / (7 * 24 * 60 * 60 * 1000));
 
   // Top bar
   document.getElementById('shutName').textContent = config.shutdownName || 'Shutdown';
@@ -955,11 +955,17 @@ function renderProgress() {
 let setupUsers = []; // local copy of users for editing
 
 function renderSetupPage() {
-  // Prefill shutdown details from loaded config
-  document.getElementById('setup-shutName').value  = config.shutdownName || '';
-  document.getElementById('setup-startDate').value = config.startDate    || '';
-  document.getElementById('setup-duration').value  = config.duration     || '';
-  document.getElementById('setup-revision').value  = config.revision     || '';
+  document.getElementById('setup-shutName').value = config.shutdownName || '';
+  // Normalise date to YYYY-MM-DD for the date input regardless of how GAS stored it
+  let dateVal = config.startDate || '';
+  if (dateVal && !dateVal.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    // Try to reformat if GAS returned it differently
+    const d = new Date(dateVal);
+    if (!isNaN(d)) dateVal = d.toISOString().split('T')[0];
+  }
+  document.getElementById('setup-startDate').value = dateVal;
+  document.getElementById('setup-duration').value  = config.duration || '';
+  document.getElementById('setup-revision').value  = config.revision || '';
   loadUsersForSetup();
 }
 
@@ -1017,7 +1023,7 @@ function deleteRoleRow(i) {
 async function saveConfig() {
   const btn = document.getElementById('saveConfigBtn');
   const name  = document.getElementById('setup-shutName').value.trim();
-  const date  = document.getElementById('setup-startDate').value;
+  const date  = document.getElementById('setup-startDate').value; // YYYY-MM-DD
   const dur   = document.getElementById('setup-duration').value.trim();
   const rev   = document.getElementById('setup-revision').value.trim();
   if (!name || !date) { showToast('Name and date are required'); return; }
@@ -1026,10 +1032,14 @@ async function saveConfig() {
     const res = await api({ action:'saveConfig', shutdownName:name, startDate:date, duration:dur, revision:rev });
     if (res.ok) {
       config.shutdownName = name; config.startDate = date; config.duration = dur; config.revision = rev;
-      const start = new Date(date);
+      // Parse date as local time (split to avoid UTC offset shifting the day)
+      const [y,m,d] = date.split('-').map(Number);
+      const start = new Date(y, m-1, d);
       weeksOut = Math.round((start - new Date()) / (7*24*60*60*1000));
       document.getElementById('shutName').textContent = name;
       document.getElementById('weeksPill').textContent = weeksOut >= 0 ? 'W-'+weeksOut : 'W+'+Math.abs(weeksOut);
+      document.getElementById('weeksPill').style.background = weeksOut <= 2 ? 'var(--red)' : 'var(--amber)';
+      renderDashboard(); // refresh variance/weeks cards immediately
       btn.textContent = 'Saved!'; btn.classList.add('success');
       setTimeout(() => { btn.textContent = 'Save shutdown details'; btn.classList.remove('success'); btn.disabled = false; }, 2000);
       showToast('Shutdown details updated');
@@ -1083,6 +1093,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const stored = sessionStorage.getItem('srdUser');
   if (stored) {
     currentUser = JSON.parse(stored);
+    if (currentUser.role === 'Admin') {
+      document.getElementById('tab-setup').classList.remove('hidden');
+    }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('mainApp').classList.remove('hidden');
     initApp();
