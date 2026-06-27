@@ -186,6 +186,36 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .modal-save{flex:2;padding:12px;border:none;border-radius:8px;background:var(--navy);font-size:14px;color:var(--white);cursor:pointer;font-weight:600}
 
 /* ── Spinner / states ── */
+/* ── Setup page ── */
+.setup-page{padding:14px;display:flex;flex-direction:column;gap:16px}
+.setup-section{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.setup-section-head{padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--navy);letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between}
+.setup-field{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.setup-field:last-child{border-bottom:none}
+.setup-field label{font-size:13px;color:var(--text-secondary);flex:0 0 110px}
+.setup-field input{flex:1;font-size:14px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);font-family:inherit}
+.setup-field input:focus{outline:none;border-color:var(--teal)}
+.setup-save-btn{margin:0 14px 14px;padding:12px;border:none;border-radius:8px;background:var(--navy);color:var(--white);font-size:14px;font-weight:600;cursor:pointer;width:calc(100% - 28px);transition:background .15s}
+.setup-save-btn:active{background:var(--navy-light)}
+.setup-save-btn.success{background:var(--green)}
+.role-row-setup{padding:11px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.role-row-setup:last-child{border-bottom:none}
+.role-row-setup input.role-name{flex:1;font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);font-family:inherit}
+.role-row-setup input.role-pin{width:72px;font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--white);color:var(--text);font-family:inherit;text-align:center;letter-spacing:.1em}
+.toggle-wrap{display:flex;align-items:center;gap:0;flex-shrink:0}
+.toggle{position:relative;width:40px;height:22px;cursor:pointer}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:11px;background:var(--border);transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--teal)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--white);transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle input:checked~.toggle-thumb{transform:translateX(18px)}
+.add-role-btn{margin:10px 14px;padding:9px;border:1.5px dashed var(--border);border-radius:8px;background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;width:calc(100% - 28px);display:flex;align-items:center;justify-content:center;gap:6px;transition:border-color .15s,color .15s}
+.add-role-btn:hover{border-color:var(--teal);color:var(--teal)}
+.role-del-btn{width:24px;height:24px;border-radius:50%;border:none;background:var(--red-bg);color:var(--red);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.setup-note{font-size:11px;color:var(--text-muted);padding:8px 14px;border-top:1px solid var(--border);line-height:1.5}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);font-size:13px;font-weight:500;padding:10px 20px;border-radius:20px;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
 .spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:12px;color:var(--text-muted);font-size:13px}
 .spinner{width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -264,6 +294,10 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
       <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       Progress
     </div>
+    <div class="nav-tab hidden" onclick="showTab('setup',this)" id="tab-setup">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Setup
+    </div>
   </div>
 
   <div class="views">
@@ -302,6 +336,50 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
     <!-- PROGRESS -->
     <div class="view" id="view-progress">
       <div class="prog-summary" id="progressContainer"></div>
+    </div>
+
+    <!-- SETUP (admin only) -->
+    <div class="view" id="view-setup">
+      <div class="setup-page">
+
+        <!-- Shutdown details -->
+        <div class="setup-section">
+          <div class="setup-section-head">Shutdown details</div>
+          <div class="setup-field">
+            <label>Name</label>
+            <input type="text" id="setup-shutName" placeholder="e.g. May Major">
+          </div>
+          <div class="setup-field">
+            <label>Start date</label>
+            <input type="date" id="setup-startDate">
+          </div>
+          <div class="setup-field">
+            <label>Duration</label>
+            <input type="text" id="setup-duration" placeholder="e.g. 96Hrs">
+          </div>
+          <div class="setup-field">
+            <label>Revision</label>
+            <input type="text" id="setup-revision" placeholder="e.g. MTHS2504">
+          </div>
+          <button class="setup-save-btn" id="saveConfigBtn" onclick="saveConfig()">Save shutdown details</button>
+        </div>
+
+        <!-- Roles -->
+        <div class="setup-section">
+          <div class="setup-section-head">
+            Roles
+            <span style="font-size:10px;color:var(--text-muted);text-transform:none;font-weight:400">name · PIN · active</span>
+          </div>
+          <div id="rolesContainer"></div>
+          <button class="add-role-btn" onclick="addRoleRow()">
+            <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add role
+          </button>
+          <button class="setup-save-btn" id="saveRolesBtn" onclick="saveRoles()">Save roles</button>
+          <div class="setup-note">PIN must be 4 digits. Turning a role off hides it from the checklist but keeps its task history. Changes take effect on next login.</div>
+        </div>
+
+      </div>
     </div>
 
   </div>
@@ -345,6 +423,8 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
   </div>
 
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 // ── Config ───────────────────────────────────────────────────
@@ -573,6 +653,12 @@ function demoApi(body) {
       assignedTo: body.assignedTo, daysLeft: 0, _local: true });
     return Promise.resolve({ ok: true, id });
   }
+  if (action === 'getUsers') {
+    return Promise.resolve(Object.entries(DEMO_USERS).map(([pin, u]) => ({
+      userId: u.userId, name: u.name, role: u.role, pin, active: true
+    })));
+  }
+  if (action === 'saveConfig' || action === 'saveUsers') return Promise.resolve({ ok: true });
   return Promise.resolve({ ok: true });
 }
 
@@ -587,6 +673,10 @@ async function initApp() {
   if (!currentUser) return;
 
   document.getElementById('userChip').textContent = currentUser.name + ' · ' + currentUser.role;
+
+  if (currentUser.role === 'Admin') {
+    document.getElementById('tab-setup').classList.remove('hidden');
+  }
 
   // Show admin-only tab indicator (none on mobile for now)
   if (currentUser.role !== 'Admin') {
@@ -861,12 +951,131 @@ function renderProgress() {
   document.getElementById('progressContainer').innerHTML = html || '<div class="empty-state">No data yet</div>';
 }
 
+// ── Setup ─────────────────────────────────────────────────────
+let setupUsers = []; // local copy of users for editing
+
+function renderSetupPage() {
+  // Prefill shutdown details from loaded config
+  document.getElementById('setup-shutName').value  = config.shutdownName || '';
+  document.getElementById('setup-startDate').value = config.startDate    || '';
+  document.getElementById('setup-duration').value  = config.duration     || '';
+  document.getElementById('setup-revision').value  = config.revision     || '';
+  loadUsersForSetup();
+}
+
+async function loadUsersForSetup() {
+  const container = document.getElementById('rolesContainer');
+  container.innerHTML = '<div style="padding:14px;color:var(--text-muted);font-size:13px">Loading…</div>';
+  try {
+    const res = await api({ action: 'getUsers' });
+    setupUsers = Array.isArray(res) ? res : [];
+    renderRoleRows();
+  } catch(e) {
+    container.innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Error loading users: ' + e.message + '</div>';
+  }
+}
+
+function renderRoleRows() {
+  const container = document.getElementById('rolesContainer');
+  if (!setupUsers.length) {
+    container.innerHTML = '<div style="padding:14px;color:var(--text-muted);font-size:13px">No roles found</div>';
+    return;
+  }
+  container.innerHTML = setupUsers.map((u, i) => `
+    <div class="role-row-setup" id="rolerow-${i}">
+      <input class="role-name" type="text" value="${u.name || ''}" placeholder="Role name"
+        oninput="setupUsers[${i}].name=this.value">
+      <input class="role-pin" type="text" maxlength="4" value="${u.pin || ''}" placeholder="PIN"
+        oninput="setupUsers[${i}].pin=this.value">
+      <label class="toggle" title="${u.active ? 'Active' : 'Inactive'}">
+        <input type="checkbox" ${u.active === true || u.active === 'TRUE' || u.active === 'true' ? 'checked' : ''}
+          onchange="setupUsers[${i}].active=this.checked">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+      ${u.userId === 'U999' ? '<div style="width:24px"></div>' :
+        `<button class="role-del-btn" onclick="deleteRoleRow(${i})" title="Remove">✕</button>`}
+    </div>`).join('');
+}
+
+function addRoleRow() {
+  const newId = 'U' + Date.now();
+  setupUsers.push({ userId: newId, name: '', role: '', pin: '', active: true, _new: true });
+  renderRoleRows();
+  // focus the new name field
+  const rows = document.querySelectorAll('.role-row-setup');
+  const lastInput = rows[rows.length - 1]?.querySelector('.role-name');
+  if (lastInput) lastInput.focus();
+}
+
+function deleteRoleRow(i) {
+  if (setupUsers[i].userId === 'U999') return; // protect admin
+  setupUsers.splice(i, 1);
+  renderRoleRows();
+}
+
+async function saveConfig() {
+  const btn = document.getElementById('saveConfigBtn');
+  const name  = document.getElementById('setup-shutName').value.trim();
+  const date  = document.getElementById('setup-startDate').value;
+  const dur   = document.getElementById('setup-duration').value.trim();
+  const rev   = document.getElementById('setup-revision').value.trim();
+  if (!name || !date) { showToast('Name and date are required'); return; }
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    const res = await api({ action:'saveConfig', shutdownName:name, startDate:date, duration:dur, revision:rev });
+    if (res.ok) {
+      config.shutdownName = name; config.startDate = date; config.duration = dur; config.revision = rev;
+      const start = new Date(date);
+      weeksOut = Math.round((start - new Date()) / (7*24*60*60*1000));
+      document.getElementById('shutName').textContent = name;
+      document.getElementById('weeksPill').textContent = weeksOut >= 0 ? 'W-'+weeksOut : 'W+'+Math.abs(weeksOut);
+      btn.textContent = 'Saved!'; btn.classList.add('success');
+      setTimeout(() => { btn.textContent = 'Save shutdown details'; btn.classList.remove('success'); btn.disabled = false; }, 2000);
+      showToast('Shutdown details updated');
+    } else { showToast('Error: ' + (res.error || 'Unknown')); btn.textContent = 'Save shutdown details'; btn.disabled = false; }
+  } catch(e) { showToast('Error: ' + e.message); btn.textContent = 'Save shutdown details'; btn.disabled = false; }
+}
+
+async function saveRoles() {
+  const btn = document.getElementById('saveRolesBtn');
+  // Validate PINs
+  for (const u of setupUsers) {
+    if (!u.name.trim()) { showToast('All roles need a name'); return; }
+    if (!/^\d{4}$/.test(String(u.pin).trim())) { showToast('PINs must be exactly 4 digits (' + u.name + ')'); return; }
+  }
+  // Check for duplicate PINs
+  const pins = setupUsers.map(u => String(u.pin).trim());
+  if (new Set(pins).size !== pins.length) { showToast('Each role must have a unique PIN'); return; }
+
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  try {
+    const payload = setupUsers.map(u => ({
+      userId: u.userId, name: u.name.trim(), role: u.name.trim(),
+      pin: String(u.pin).trim(), active: u.active === true || u.active === 'true' || u.active === 'TRUE'
+    }));
+    const res = await api({ action:'saveUsers', users: JSON.stringify(payload) });
+    if (res.ok) {
+      btn.textContent = 'Saved!'; btn.classList.add('success');
+      setTimeout(() => { btn.textContent = 'Save roles'; btn.classList.remove('success'); btn.disabled = false; }, 2000);
+      showToast('Roles updated');
+    } else { showToast('Error: ' + (res.error || 'Unknown')); btn.textContent = 'Save roles'; btn.disabled = false; }
+  } catch(e) { showToast('Error: ' + e.message); btn.textContent = 'Save roles'; btn.disabled = false; }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
 // ── Tabs ─────────────────────────────────────────────────────
 function showTab(id, el) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
   el.classList.add('active');
+  if (id === 'setup') renderSetupPage();
 }
 
 // ── Boot ─────────────────────────────────────────────────────
