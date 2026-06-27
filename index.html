@@ -349,16 +349,139 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 <script>
 // ── Config ───────────────────────────────────────────────────
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzVYxYAqO3sDxI5PGo-4gJiyo_c79av4QMQs1SX4747pv-QOQX3J2ZXIKmo9XuNJniz/exec';
+const DEMO_MODE = GAS_URL.includes('YOUR_GAS'); // auto-detects placeholder
+
+// ── Demo data (used when GAS not yet deployed) ───────────────
+const DEMO_USERS = {
+  '1001': { ok:true, userId:'U001', name:'Shut Coordinator', role:'Shut Coordinator' },
+  '1002': { ok:true, userId:'U002', name:'Shut Planner',     role:'Shut Planner' },
+  '1003': { ok:true, userId:'U003', name:'Shut Scheduler',   role:'Shut Scheduler' },
+  '1004': { ok:true, userId:'U004', name:'Permit Hut',       role:'Permit Hut' },
+  '1005': { ok:true, userId:'U005', name:'Maint Sup',        role:'Maint Sup' },
+  '1006': { ok:true, userId:'U006', name:'HSES',             role:'HSES' },
+  '1007': { ok:true, userId:'U007', name:'Mat. Logistics',   role:'Material Logistics' },
+  '1008': { ok:true, userId:'U008', name:'Planning Supt',    role:'Planning Superintendent' },
+  '9999': { ok:true, userId:'U999', name:'Admin',            role:'Admin' },
+};
+
+const DEMO_CONFIG = {
+  shutdownName:'May Major', startDate:'2024-06-24',
+  duration:'96Hrs', revision:'MTHS2504', appTitle:'Palm Crest SRD'
+};
+
+const DEMO_TASKS = [
+  {taskId:'SC001',role:'Shut Coordinator',description:'Attend weekly scope challenge meeting',weekDue:-12,duration:12,kpiLink:''},
+  {taskId:'SC002',role:'Shut Coordinator',description:'Run weekly shutdown readiness review meeting',weekDue:-12,duration:12,kpiLink:''},
+  {taskId:'SC003',role:'Shut Coordinator',description:'Send out scope freeze site notice',weekDue:-7,duration:1,kpiLink:'Scope Freeze'},
+  {taskId:'SC004',role:'Shut Coordinator',description:'Review jobs and assess contractor labour requirements',weekDue:-7,duration:7,kpiLink:''},
+  {taskId:'SC005',role:'Shut Coordinator',description:'Ensure planner has sent out mobilisation requirements (RRF)',weekDue:-10,duration:1,kpiLink:''},
+  {taskId:'SC006',role:'Shut Coordinator',description:'Follow up with scheduler re preferred contractor sort field',weekDue:-7,duration:5,kpiLink:''},
+  {taskId:'SC007',role:'Shut Coordinator',description:'Assist scheduler to identify and order hire equipment',weekDue:-2,duration:1,kpiLink:'Hire Equip'},
+  {taskId:'SC008',role:'Shut Coordinator',description:'Walkthrough with scheduler',weekDue:-3,duration:4,kpiLink:'S/down Walkthrough'},
+  {taskId:'SC009',role:'Shut Coordinator',description:'Develop and send out shutdown definition',weekDue:-8,duration:1,kpiLink:''},
+  {taskId:'SC010',role:'Shut Coordinator',description:'Develop shutdown management plan',weekDue:-6,duration:2,kpiLink:''},
+  {taskId:'SC011',role:'Shut Coordinator',description:'Develop org chart',weekDue:-8,duration:3,kpiLink:''},
+  {taskId:'SC012',role:'Shut Coordinator',description:'Identify area leads and communicate to them',weekDue:-8,duration:2,kpiLink:''},
+  {taskId:'SC013',role:'Shut Coordinator',description:'Conduct internal schedule review',weekDue:-5,duration:3,kpiLink:''},
+  {taskId:'SC014',role:'Shut Coordinator',description:'Liaise with MLO to confirm all parts and materials on track',weekDue:-5,duration:4,kpiLink:'Parts Ordered'},
+  {taskId:'SC015',role:'Shut Coordinator',description:'Develop operational readiness plan (ORA)',weekDue:-4,duration:2,kpiLink:''},
+  {taskId:'SC016',role:'Shut Coordinator',description:'Identify high-risk tasks requiring rescue plan (CSE, W@H)',weekDue:-6,duration:3,kpiLink:''},
+  {taskId:'SC017',role:'Shut Coordinator',description:'Develop site layout plan with scheduler (incl. crane positions)',weekDue:-6,duration:2,kpiLink:''},
+  {taskId:'SC018',role:'Shut Coordinator',description:'Participate in isolation review with permit hut',weekDue:-2,duration:2,kpiLink:'Isolations'},
+  {taskId:'SC019',role:'Shut Coordinator',description:'Ensure planners have sent out mobilisation requirements (RFQ)',weekDue:-1,duration:1,kpiLink:'Mob Finalised'},
+  {taskId:'SC020',role:'Shut Coordinator',description:'Develop permit requests',weekDue:-2,duration:2,kpiLink:''},
+  {taskId:'SC021',role:'Shut Coordinator',description:'Email camp with shutdown dates for crib room cleaning',weekDue:-4,duration:1,kpiLink:''},
+  {taskId:'SC022',role:'Shut Coordinator',description:'Send out mobilisation sheet to shutdown admin',weekDue:-2,duration:2,kpiLink:''},
+  {taskId:'SC023',role:'Shut Coordinator',description:'Develop shutdown expectations presentation',weekDue:-3,duration:2,kpiLink:''},
+  {taskId:'SC024',role:'Shut Coordinator',description:'Ensure enough confined space sentries for planned works',weekDue:-2,duration:1,kpiLink:''},
+  {taskId:'SC025',role:'Shut Coordinator',description:'Identify commissioning requirements from job list with scheduler',weekDue:-3,duration:2,kpiLink:''},
+  {taskId:'SC026',role:'Shut Coordinator',description:'Develop washdown list with scheduler',weekDue:-3,duration:3,kpiLink:''},
+  {taskId:'SC027',role:'Shut Coordinator',description:'Identify pre-works required — earthworks and cleaning',weekDue:-4,duration:3,kpiLink:''},
+  {taskId:'SC028',role:'Shut Coordinator',description:'Finalise positioning list and communicate to Ops',weekDue:-2,duration:2,kpiLink:''},
+  {taskId:'SC029',role:'Shut Coordinator',description:'Schedule post-shut critique meeting',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'SC030',role:'Shut Coordinator',description:'Conduct contractor leadership meeting',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'SP001',role:'Shut Planner',description:'Prepare job plans and work packages',weekDue:-9,duration:9,kpiLink:''},
+  {taskId:'SP002',role:'Shut Planner',description:'Ensure parts ordered and verified in system',weekDue:-5,duration:1,kpiLink:'Parts Ordered'},
+  {taskId:'SP003',role:'Shut Planner',description:'Parts verified and confirmed available',weekDue:-3,duration:1,kpiLink:'Parts Verified'},
+  {taskId:'SP004',role:'Shut Planner',description:'Raise major purchase orders',weekDue:-1,duration:1,kpiLink:'Major POs'},
+  {taskId:'SP005',role:'Shut Planner',description:'Issue RFQs to contractors',weekDue:-2,duration:1,kpiLink:'RFQs'},
+  {taskId:'SP006',role:'Shut Planner',description:'Finalise mobilisation documentation',weekDue:-1,duration:1,kpiLink:'Mob Finalised'},
+  {taskId:'SP007',role:'Shut Planner',description:'Prepare execution packages for each job',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'SP008',role:'Shut Planner',description:'Review and close out completed work orders',weekDue:1,duration:1,kpiLink:''},
+  {taskId:'SS001',role:'Shut Scheduler',description:'Develop baseline Gantt schedule',weekDue:-9,duration:4,kpiLink:''},
+  {taskId:'SS002',role:'Shut Scheduler',description:'Confirm and freeze schedule',weekDue:-5,duration:1,kpiLink:'Schedule Freeze'},
+  {taskId:'SS003',role:'Shut Scheduler',description:'Confirm critical path',weekDue:-4,duration:1,kpiLink:'Critical Path Confirmed'},
+  {taskId:'SS004',role:'Shut Scheduler',description:'Conduct stakeholder Gantt walkthrough',weekDue:-3,duration:4,kpiLink:'S/down Walkthrough'},
+  {taskId:'SS005',role:'Shut Scheduler',description:'Schedule sign-off by all stakeholders',weekDue:-2,duration:1,kpiLink:'Schedule Sign Off'},
+  {taskId:'SS006',role:'Shut Scheduler',description:'Identify and book hire equipment',weekDue:-2,duration:1,kpiLink:'Hire Equip'},
+  {taskId:'SS007',role:'Shut Scheduler',description:'Confirm isolations with permit hut',weekDue:-2,duration:1,kpiLink:'Isolations'},
+  {taskId:'SS008',role:'Shut Scheduler',description:'Issue execution package',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'SS009',role:'Shut Scheduler',description:'Develop site layout plan (including crane positions)',weekDue:-6,duration:2,kpiLink:''},
+  {taskId:'PH001',role:'Permit Hut',description:'Develop permit register for shutdown works',weekDue:-3,duration:3,kpiLink:''},
+  {taskId:'PH002',role:'Permit Hut',description:'Isolation review with coordinator',weekDue:-2,duration:2,kpiLink:'Isolations'},
+  {taskId:'PH003',role:'Permit Hut',description:'Isolation schedule finalised',weekDue:-2,duration:1,kpiLink:'Isolations'},
+  {taskId:'PH004',role:'Permit Hut',description:'Permit hut staffed and ready for shutdown start',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'MS001',role:'Maint Sup',description:'Review and approve job list for shutdown',weekDue:-8,duration:2,kpiLink:''},
+  {taskId:'MS002',role:'Maint Sup',description:'Confirm resource requirements per area',weekDue:-6,duration:2,kpiLink:''},
+  {taskId:'MS003',role:'Maint Sup',description:'Attend Gantt walkthrough',weekDue:-3,duration:1,kpiLink:'S/down Walkthrough'},
+  {taskId:'MS004',role:'Maint Sup',description:'Brief area teams on shutdown plan',weekDue:-1,duration:2,kpiLink:''},
+  {taskId:'HS001',role:'HSES',description:'Review high-risk task list and confirm rescue plans',weekDue:-3,duration:2,kpiLink:''},
+  {taskId:'HS002',role:'HSES',description:'Confirm inductions roster finalised',weekDue:-2,duration:1,kpiLink:''},
+  {taskId:'HS003',role:'HSES',description:'Attend pre-shutdown contractor leadership meeting',weekDue:-1,duration:1,kpiLink:'CRAW'},
+  {taskId:'ML001',role:'Material Logistics',description:'Confirm all parts on order',weekDue:-5,duration:1,kpiLink:'Parts Ordered'},
+  {taskId:'ML002',role:'Material Logistics',description:'Verify parts received and staged',weekDue:-3,duration:1,kpiLink:'Parts Verified'},
+  {taskId:'ML003',role:'Material Logistics',description:'Confirm consumables stocktake complete',weekDue:-2,duration:1,kpiLink:''},
+  {taskId:'ML004',role:'Material Logistics',description:'Stage materials at work-front',weekDue:-1,duration:2,kpiLink:''},
+  {taskId:'ML005',role:'Material Logistics',description:'Return unused stock to store post-shutdown',weekDue:1,duration:1,kpiLink:''},
+  {taskId:'PS001',role:'Planning Superintendent',description:'Chair weekly shutdown readiness meeting',weekDue:-12,duration:12,kpiLink:''},
+  {taskId:'PS002',role:'Planning Superintendent',description:'Approve scope freeze',weekDue:-7,duration:1,kpiLink:'Scope Freeze'},
+  {taskId:'PS003',role:'Planning Superintendent',description:'Review and approve shutdown management plan',weekDue:-5,duration:1,kpiLink:''},
+  {taskId:'PS004',role:'Planning Superintendent',description:'Approve Gantt schedule',weekDue:-4,duration:1,kpiLink:''},
+  {taskId:'PS005',role:'Planning Superintendent',description:'Attend stakeholder walkthrough',weekDue:-3,duration:1,kpiLink:'S/down Walkthrough'},
+  {taskId:'PS006',role:'Planning Superintendent',description:'Sign off final schedule',weekDue:-2,duration:1,kpiLink:'Schedule Sign Off'},
+  {taskId:'PS007',role:'Planning Superintendent',description:'Confirm execution readiness',weekDue:-1,duration:1,kpiLink:''},
+  {taskId:'PS008',role:'Planning Superintendent',description:'Conduct post-shutdown review',weekDue:1,duration:1,kpiLink:''},
+];
+
+const DEMO_KPIS = [
+  {kpiId:'KPI01',category:'Planning',name:'Scope Freeze',weekDue:-7,actualPct:0,daysLeft:-77},
+  {kpiId:'KPI02',category:'Planning',name:'Parts Ordered',weekDue:-5,actualPct:33,daysLeft:-63},
+  {kpiId:'KPI03',category:'Planning',name:'Parts Verified',weekDue:-3,actualPct:0,daysLeft:-49},
+  {kpiId:'KPI04',category:'Planning',name:'Major POs',weekDue:-1,actualPct:0,daysLeft:-35},
+  {kpiId:'KPI05',category:'Planning',name:'RFQs',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI06',category:'Planning',name:'Mob Finalised',weekDue:-1,actualPct:0,daysLeft:-35},
+  {kpiId:'KPI07',category:'Scheduling',name:'Schedule Freeze',weekDue:-5,actualPct:0,daysLeft:-63},
+  {kpiId:'KPI08',category:'Scheduling',name:'Critical Path Confirmed',weekDue:-4,actualPct:0,daysLeft:-56},
+  {kpiId:'KPI09',category:'Scheduling',name:'S/down Walkthrough',weekDue:-3,actualPct:0,daysLeft:-49},
+  {kpiId:'KPI10',category:'Scheduling',name:'Schedule Sign Off',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI11',category:'Scheduling',name:'Hire Equip',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI12',category:'Scheduling',name:'Isolations',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI13',category:'Execution',name:'CRAW',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI14',category:'Execution',name:'SEP',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI15',category:'Execution',name:'Con L/ship Meeting',weekDue:-2,actualPct:0,daysLeft:-42},
+  {kpiId:'KPI16',category:'Execution',name:'OSE',weekDue:-1,actualPct:0,daysLeft:-21},
+  {kpiId:'KPI17',category:'Execution',name:'Post Shut Report',weekDue:1,actualPct:0,daysLeft:7},
+];
+
+const DEMO_ACTIONS = [
+  {actionId:'ACT001',status:'Open',priority:'High',area:'TLO Chute',weekDue:-6,description:'Organise workshop for TLO chute component changeout and produce detailed scope',assignedTo:'Martin & Jon A',daysLeft:-70},
+  {actionId:'ACT002',status:'Open',priority:'High',area:'Square-Round',weekDue:-6,description:'Replace square to round — parts and scope to be developed',assignedTo:'Jan Allford',daysLeft:-70},
+  {actionId:'ACT003',status:'Open',priority:'Medium',area:'RC901',weekDue:-10,description:'RC901 change buckets 10 and opposite — ensure W/O reflects and bucket repair in progress',assignedTo:'Paul M, Ash W',daysLeft:-98},
+  {actionId:'ACT004',status:'Open',priority:'Medium',area:'RC901',weekDue:-8,description:'Bucket wheel bearing — raise Noti, need con mon data to determine changeout requirement',assignedTo:'Tony W',daysLeft:-88},
+  {actionId:'ACT005',status:'Open',priority:'Medium',area:'CV902',weekDue:-8,description:'CV902 coolers on all gearboxes — noti and scopes required for Aug shut',assignedTo:'JWH',daysLeft:-88},
+  {actionId:'ACT006',status:'Open',priority:'Medium',area:'CH901',weekDue:-8,description:'CH901 relocate blocked chute sensor — requires scope',assignedTo:'Jon Allford',daysLeft:-88},
+];
 
 // ── State ────────────────────────────────────────────────────
 let currentUser = null;
 let config = {};
 let tasks = [];
-let statuses = {}; // taskId -> {status, userName}
+let statuses = {};
 let kpis = [];
 let actions = [];
 let weeksOut = 0;
 let activeRole = 'all';
+let demoStatuses = {}; // in-memory status store for demo mode
 
 // ── PIN auth ─────────────────────────────────────────────────
 let pinBuffer = '';
@@ -382,7 +505,7 @@ function updatePinDots() {
 }
 
 async function submitPin() {
-  document.getElementById('pinError').textContent = '';
+  document.getElementById('pinError').textContent = 'Checking…';
   try {
     const res = await api({ action: 'login', pin: pinBuffer });
     if (res.ok) {
@@ -396,8 +519,8 @@ async function submitPin() {
       pinBuffer = '';
       updatePinDots();
     }
-  } catch {
-    document.getElementById('pinError').textContent = 'Connection error — check network';
+  } catch(e) {
+    document.getElementById('pinError').textContent = 'Error: ' + e.message;
     pinBuffer = '';
     updatePinDots();
   }
@@ -413,13 +536,44 @@ function logout() {
   document.getElementById('loginScreen').classList.remove('hidden');
 }
 
-// ── API helper ───────────────────────────────────────────────
+// ── API helper — GET-based for GAS CORS compatibility ────────
 async function api(body) {
-  const r = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-  return r.json();
+  if (DEMO_MODE) return demoApi(body);
+  const qs = new URLSearchParams(body).toString();
+  const r = await fetch(GAS_URL + '?' + qs, { redirect: 'follow' });
+  const text = await r.text();
+  try { return JSON.parse(text); }
+  catch(e) { throw new Error('Bad response: ' + text.substring(0,120)); }
+  // dummy to satisfy original structure
+}
+
+function demoApi(body) {
+  const { action } = body;
+  if (action === 'login') {
+    const u = DEMO_USERS[String(body.pin)];
+    return Promise.resolve(u || { ok: false, error: 'Invalid PIN' });
+  }
+  if (action === 'getConfig')   return Promise.resolve(DEMO_CONFIG);
+  if (action === 'getTasks')    return Promise.resolve(DEMO_TASKS);
+  if (action === 'getKPIs')     return Promise.resolve(DEMO_KPIS);
+  if (action === 'getActions')  return Promise.resolve([...DEMO_ACTIONS, ...actions.filter(a => a._local)]);
+  if (action === 'getStatuses') {
+    return Promise.resolve(Object.entries(demoStatuses).map(([taskId, s]) => ({
+      taskId, status: s.status, userName: s.userName
+    })));
+  }
+  if (action === 'setStatus') {
+    demoStatuses[body.taskId] = { status: body.status, userName: body.userName };
+    return Promise.resolve({ ok: true });
+  }
+  if (action === 'addAction') {
+    const id = 'ACT-' + Date.now();
+    actions.push({ actionId: id, status: 'Open', priority: body.priority,
+      area: body.area, weekDue: body.weekDue, description: body.description,
+      assignedTo: body.assignedTo, daysLeft: 0, _local: true });
+    return Promise.resolve({ ok: true, id });
+  }
+  return Promise.resolve({ ok: true });
 }
 
 // ── App init ─────────────────────────────────────────────────
@@ -457,9 +611,10 @@ async function loadAll() {
   kpis = k;
   actions = a;
 
-  // Build status map
+  // Build status map (merge GAS/demo data with any in-memory demo changes)
   statuses = {};
   s.forEach(r => { statuses[r.taskId] = { status: r.status, userName: r.userName }; });
+  if (DEMO_MODE) Object.entries(demoStatuses).forEach(([id,v]) => { statuses[id] = v; });
 
   // Compute weeks out
   const start = new Date(config.startDate);
