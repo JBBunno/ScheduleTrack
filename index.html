@@ -1309,7 +1309,7 @@ function renderDashboard() {
         // Use the actual per-week cell status for this specific column
         const doneAtWeek = tasksInRange.filter(t => statuses[cellKey(t.taskId, w)]?.status === 'done').length;
         const behindAtWeek = tasksInRange.filter(t => statuses[cellKey(t.taskId, w)]?.status === 'behind').length;
-        const isPastWeek = w > weeksOut; // weeks count down to 0 at shutdown; a week is "past" once we've moved beyond it
+        const isPastWeek = w < weeksOut; // weeks count down toward shutdown — a lower number means it has already elapsed
         cellPct = Math.round(doneAtWeek / tasksInRange.length * 100);
         if (cellPct >= 100) cellColor = '#1D9E75';        // fully done — green
         else if (doneAtWeek > 0) cellColor = '#EF9F27';     // partially done — amber
