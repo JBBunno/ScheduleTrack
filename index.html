@@ -1009,7 +1009,7 @@ let statuses = {};
 // Returns true if ANY tracked week for this task is marked done
 function taskIsDone(taskId) {
   for (const key in statuses) {
-    if (key.startsWith(taskId + ':') && statuses[key].status === 'done') return true;
+    if (key.startsWith(taskId + ':') && !key.endsWith(':na') && statuses[key].status === 'done') return true;
   }
   return false;
 }
@@ -1017,7 +1017,7 @@ function taskIsDone(taskId) {
 function taskIsBehind(taskId) {
   let hasBehind = false;
   for (const key in statuses) {
-    if (key.startsWith(taskId + ':')) {
+    if (key.startsWith(taskId + ':') && !key.endsWith(':na')) {
       if (statuses[key].status === 'done') return false;
       if (statuses[key].status === 'behind') hasBehind = true;
     }
@@ -1304,21 +1304,23 @@ function renderDashboard() {
         const startWeek = weekDue + duration - 1;
         return w <= startWeek && w >= weekDue;
       });
-      let cellPct = 0, cellColor = 'transparent';
+      const isPastWeek = w < weeksOut; // weeks count down toward shutdown — a lower number means it has already elapsed
+      let cellPct = 0, cellColor = isPastWeek ? '#dde4ed' : 'transparent'; // default: grey if past, transparent if future
+      let cellText = '';
       if (tasksInRange.length) {
         // Use the actual per-week cell status for this specific column
         const doneAtWeek = tasksInRange.filter(t => statuses[cellKey(t.taskId, w)]?.status === 'done').length;
         const behindAtWeek = tasksInRange.filter(t => statuses[cellKey(t.taskId, w)]?.status === 'behind').length;
-        const isPastWeek = w < weeksOut; // weeks count down toward shutdown — a lower number means it has already elapsed
         cellPct = Math.round(doneAtWeek / tasksInRange.length * 100);
+        cellText = cellPct + '%';
         if (cellPct >= 100) cellColor = '#1D9E75';        // fully done — green
         else if (doneAtWeek > 0) cellColor = '#EF9F27';     // partially done — amber
         else if (behindAtWeek > 0) cellColor = '#E24B4A';   // explicitly marked behind — red
         else if (isPastWeek) cellColor = '#dde4ed';         // past, untouched — neutral grey, not alarming red
-        // future/untouched weeks stay transparent
+        // future/untouched-in-range weeks stay transparent unless past
       }
       const textColor = cellColor === 'transparent' ? 'inherit' : (cellColor === '#dde4ed' ? 'var(--text-muted)' : 'white');
-      timelineHtml += `<td style="background:${cellColor};color:${textColor};font-weight:700">${tasksInRange.length ? cellPct+'%' : ''}</td>`;
+      timelineHtml += `<td style="background:${cellColor};color:${textColor};font-weight:700">${cellText}</td>`;
     });
     timelineHtml += '</tr>';
   });
