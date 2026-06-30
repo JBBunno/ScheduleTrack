@@ -1293,30 +1293,50 @@ function renderDashboard() {
 
   roles.forEach(role => {
     const roleTasks = tasks.filter(t => t.role === role);
-    const done2 = roleTasks.filter(t => taskIsDone(t.taskId)).length;
-    const pctRole = roleTasks.length ? Math.round(done2/roleTasks.length*100) : 0;
-    timelineHtml += `<tr><td class="role-label">${role} <span style="float:right;font-weight:700">${pctRole}%</span></td>`;
-    weekCols.forEach(w => {
-      const isPastWeek = w < weeksOut; // weeks count down toward shutdown — a lower number means it has already elapsed
-      // All status entries recorded for this role at this specific calendar week, regardless of each task's own tracked range
-      const ticksAtWeek = roleTasks
-        .map(t => statuses[cellKey(t.taskId, w)]?.status)
-        .filter(s => s === 'done' || s === 'behind');
-      const doneAtWeek = ticksAtWeek.filter(s => s === 'done').length;
-      const behindAtWeek = ticksAtWeek.filter(s => s === 'behind').length;
 
+    // Build the full set of trackable cells (taskId, week) for this role
+    const allCells = [];
+    roleTasks.forEach(t => {
+      const weekDue = Number(t.weekDue);
+      const duration = Number(t.duration) || 1;
+      const startWeek = weekDue + duration - 1;
+      for (let w = startWeek; w >= weekDue; w--) {
+        allCells.push({ taskId: t.taskId, week: w });
+      }
+    });
+
+    // Planned (denominator) = cells at or before the current week (already elapsed/active)
+    const plannedCells = allCells.filter(c => c.week >= weeksOut);
+    // Actual (numerator) = cells anywhere marked done
+    const doneCells = allCells.filter(c => statuses[cellKey(c.taskId, c.week)]?.status === 'done');
+    const pctRole = plannedCells.length ? Math.round(doneCells.length / plannedCells.length * 100) : 0;
+
+    timelineHtml += `<tr><td class="role-label">${role} <span style="float:right;font-weight:700">${pctRole}%</span></td>`;
+
+    weekCols.forEach(w => {
+      const isPastWeek = w >= weeksOut; // weeks count down toward shutdown — current week and earlier (numerically higher) are "elapsed/active"
+      // Cells that exist for this role at this exact week (within some task's tracked range)
+      const cellsAtWeek = allCells.filter(c => c.week === w);
       let cellColor = 'transparent';
       let cellText = '';
-      if (ticksAtWeek.length > 0) {
-        const cellPct = Math.round(doneAtWeek / ticksAtWeek.length * 100);
-        cellText = cellPct + '%';
-        if (cellPct >= 100) cellColor = '#1D9E75';        // fully done — green
-        else if (doneAtWeek > 0) cellColor = '#EF9F27';     // partially done — amber
-        else if (behindAtWeek > 0) cellColor = '#E24B4A';   // explicitly marked behind — red
-      } else if (isPastWeek) {
-        cellColor = '#dde4ed';                              // past calendar week, nothing ticked — neutral grey
+
+      if (cellsAtWeek.length > 0) {
+        const statusesAtWeek = cellsAtWeek.map(c => statuses[cellKey(c.taskId, c.week)]?.status || 'none');
+        const doneAtWeek = statusesAtWeek.filter(s => s === 'done').length;
+        const behindAtWeek = statusesAtWeek.filter(s => s === 'behind').length;
+        const cellPct = Math.round(doneAtWeek / cellsAtWeek.length * 100);
+
+        if (doneAtWeek > 0 || behindAtWeek > 0) {
+          cellText = cellPct + '%';
+          if (cellPct >= 100) cellColor = '#1D9E75';        // fully done — green
+          else if (doneAtWeek > 0) cellColor = '#EF9F27';     // partially done — amber
+          else cellColor = '#E24B4A';                          // marked behind, none done — red
+        } else if (isPastWeek) {
+          cellColor = '#dde4ed';                                // tracked here, current/elapsed week, nothing ticked — grey
+        }
+        // tracked here but a future week, untouched — stays transparent
       }
-      // future weeks with nothing ticked stay transparent
+      // no task tracked at this week at all — stays transparent regardless of past/future
 
       const textColor = cellColor === 'transparent' ? 'inherit' : (cellColor === '#dde4ed' ? 'var(--text-muted)' : 'white');
       timelineHtml += `<td style="background:${cellColor};color:${textColor};font-weight:700">${cellText}</td>`;
