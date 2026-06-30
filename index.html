@@ -129,6 +129,95 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
   .section-label{padding:14px 20px 8px}
 }
 
+/* ── Visual Dashboard ── */
+.dash-page{padding:14px;display:flex;flex-direction:column;gap:14px}
+.dash-header-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-wrap:wrap;gap:14px;padding:14px;align-items:stretch;
+}
+.dash-header-left{flex:1;min-width:200px}
+.dash-info-table{width:100%;border-collapse:collapse;font-size:12px}
+.dash-info-table td{padding:3px 6px;border-bottom:1px solid var(--border)}
+.dash-info-label{color:var(--text-muted);font-weight:500;white-space:nowrap}
+.dash-info-val{color:var(--text);font-weight:600;text-align:right}
+.dash-header-mid{flex:0 0 140px;display:flex;flex-direction:column;justify-content:center;gap:6px;border-left:1px solid var(--border);border-right:1px solid var(--border);padding:0 14px}
+.dash-measure-label{font-size:10px;color:var(--text-muted);letter-spacing:.06em;text-align:center;margin-bottom:2px}
+.dash-measure-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary)}
+.dash-target-val{font-weight:700;color:var(--navy)}
+.dash-actual-row{font-size:20px;align-items:center}
+.dash-actual-val{font-weight:800;padding:2px 10px;border-radius:6px}
+.dash-header-right{flex:0 0 140px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;text-align:right}
+.dash-logo-text{font-size:18px;font-weight:300;letter-spacing:.12em;color:var(--navy)}
+.dash-logo-sub{font-size:9px;letter-spacing:.1em;color:var(--teal-dark);font-weight:600}
+
+.dash-phases{display:flex;gap:2px}
+.dash-phase{
+  flex:1;padding:8px 4px;text-align:center;font-size:12px;font-weight:700;color:var(--white);
+  position:relative;clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%,8% 50%);
+}
+.dash-phase:first-child{clip-path:polygon(0 0,92% 0,100% 50%,92% 100%,0 100%)}
+
+.dash-kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:1px;background:var(--border);border-radius:8px;overflow:hidden}
+.dash-kpi-cell{background:var(--white);padding:8px 8px;display:flex;flex-direction:column;gap:2px}
+.dash-kpi-cell-name{font-size:10.5px;color:var(--text);font-weight:600;line-height:1.2}
+.dash-kpi-cell-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted)}
+.dash-kpi-cell-bar{height:4px;border-radius:2px;background:var(--border);margin-top:2px;overflow:hidden}
+.dash-kpi-cell-fill{height:4px;border-radius:2px}
+.dash-kpi-cell.overdue{background:#fdf0f0}
+.dash-kpi-cell.soon{background:#fdf6e8}
+.dash-kpi-cell.ok{background:#eef9f4}
+
+.dash-section-title{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.02em;padding:4px 0}
+
+.dash-timeline-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.dash-timeline-scroll{overflow-x:auto}
+.gantt-table,.dash-timeline-table{border-collapse:collapse;width:100%;font-size:11px}
+.dash-timeline-table th,.dash-timeline-table td{padding:5px 6px;border:1px solid var(--border);text-align:center;white-space:nowrap}
+.dash-timeline-table th{background:var(--navy);color:var(--white);font-weight:600;font-size:10px}
+.dash-timeline-table td.role-label{text-align:left;font-weight:600;color:var(--navy);background:var(--surface);position:sticky;left:0}
+.dash-timeline-cell{font-weight:700;border-radius:3px}
+
+.dash-bottom-grid{display:flex;flex-direction:column;gap:14px}
+.dash-action-card,.dash-curve-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.dash-pie-row{display:flex;align-items:center;gap:16px}
+.dash-pie-legend{display:flex;flex-direction:column;gap:6px}
+.dash-legend-item{font-size:13px;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
+.dash-legend-item strong{color:var(--text);margin-left:2px}
+.dash-legend-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+@media(min-width:768px){
+  .dash-page{max-width:1100px;margin:0 auto}
+  .dash-bottom-grid{flex-direction:row}
+  .dash-action-card{flex:0 0 320px}
+  .dash-curve-card{flex:1}
+}
+
+/* ── Gantt-style Checklist ── */
+.gantt-scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.gantt-table{min-width:600px}
+.gantt-table th{background:var(--navy);color:var(--white);font-size:10px;font-weight:600;padding:6px 4px;border:1px solid rgba(255,255,255,.1);position:sticky;top:0;z-index:3}
+.gantt-table th.gantt-task-header{text-align:left;min-width:220px;position:sticky;left:0;z-index:4;background:var(--navy)}
+.gantt-table th.gantt-week-header{min-width:34px;text-align:center}
+.gantt-table th.gantt-week-header.gantt-current{background:var(--amber-dark)}
+.gantt-role-row td{background:var(--surface);font-weight:700;font-size:11px;color:var(--navy);padding:6px 8px;border:1px solid var(--border);position:sticky;left:0}
+.gantt-task-row td.gantt-task-name{
+  text-align:left;font-size:11.5px;color:var(--text);padding:5px 8px;border:1px solid var(--border);
+  position:sticky;left:0;background:var(--white);min-width:220px;max-width:260px;
+  white-space:normal;line-height:1.3;
+}
+.gantt-task-row:hover td.gantt-task-name{background:var(--surface)}
+.gantt-week-cell{
+  border:1px solid var(--border);text-align:center;cursor:pointer;min-width:34px;height:30px;
+  transition:background .1s;position:relative;
+}
+.gantt-week-cell:hover{background:var(--surface)}
+.gantt-week-cell.in-range{background:#d6e8f5}
+.gantt-week-cell.done{background:var(--green);color:white}
+.gantt-week-cell.behind{background:var(--red);color:white}
+.gantt-week-cell.current-week{box-shadow:inset 0 0 0 2px var(--amber)}
+.gantt-week-cell svg{width:12px;height:12px;stroke:white;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;margin:0 auto}
+.gantt-readonly{cursor:default;opacity:.6}
+
 /* ── Checklist ── */
 .role-filter-wrap{padding:10px 14px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--white);position:sticky;top:0;z-index:5}
 .role-filter-wrap::-webkit-scrollbar{display:none}
@@ -455,6 +544,10 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
       <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Checklist
     </div>
+    <div class="nav-tab" onclick="showTab('kpis',this)" id="tab-kpis">
+      <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      KPIs
+    </div>
     <div class="nav-tab" onclick="showTab('actions',this)" id="tab-actions">
       <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       Actions
@@ -475,19 +568,84 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 
   <div class="views">
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD — visual readiness report -->
     <div class="view active" id="view-dashboard">
-      <div class="metrics-grid" id="metricsGrid">
-        <div class="spinner-wrap"><div class="spinner"></div></div>
+      <div class="dash-page">
+
+        <!-- Header block -->
+        <div class="dash-header-card">
+          <div class="dash-header-left">
+            <table class="dash-info-table">
+              <tr><td class="dash-info-label">Shutdown</td><td class="dash-info-val" id="dh-name">—</td></tr>
+              <tr><td class="dash-info-label">Current date</td><td class="dash-info-val" id="dh-today">—</td></tr>
+              <tr><td class="dash-info-label">Start date</td><td class="dash-info-val" id="dh-start">—</td></tr>
+              <tr><td class="dash-info-label">Duration</td><td class="dash-info-val" id="dh-duration">—</td></tr>
+              <tr><td class="dash-info-label">Weeks out</td><td class="dash-info-val" id="dh-weeksout">—</td></tr>
+              <tr><td class="dash-info-label">Days out</td><td class="dash-info-val" id="dh-daysout">—</td></tr>
+            </table>
+          </div>
+          <div class="dash-header-mid">
+            <div class="dash-measure-label">MEASURE</div>
+            <div class="dash-measure-row">
+              <span>Target</span><span class="dash-target-val">100%</span>
+            </div>
+            <div class="dash-measure-row dash-actual-row">
+              <span>Actual</span><span class="dash-actual-val" id="dh-actual">—</span>
+            </div>
+          </div>
+          <div class="dash-header-right">
+            <div class="dash-logo-text">PALM CREST</div>
+            <div class="dash-logo-sub">SCHEDULING SOLUTIONS</div>
+          </div>
+        </div>
+
+        <!-- Phase chevrons -->
+        <div class="dash-phases" id="dashPhases"></div>
+
+        <!-- KPI summary strip -->
+        <div class="dash-kpi-strip" id="dashKpiStrip"></div>
+
+        <!-- Role readiness timeline -->
+        <div class="dash-section-title">Shutdown Readiness Timeline</div>
+        <div class="dash-timeline-card">
+          <div class="dash-timeline-scroll">
+            <table class="dash-timeline-table" id="dashTimelineTable"></table>
+          </div>
+        </div>
+
+        <!-- Action status + Readiness curve -->
+        <div class="dash-bottom-grid">
+          <div class="dash-action-card">
+            <div class="dash-section-title" style="padding:0 0 10px 0">Action List Status</div>
+            <div class="dash-pie-row">
+              <svg viewBox="0 0 120 120" width="120" height="120" id="dashPieSvg"></svg>
+              <div class="dash-pie-legend">
+                <div class="dash-legend-item"><span class="dash-legend-dot" style="background:var(--green)"></span>Completed <strong id="dh-actions-done">0</strong></div>
+                <div class="dash-legend-item"><span class="dash-legend-dot" style="background:var(--red)"></span>Open <strong id="dh-actions-open">0</strong></div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-curve-card">
+            <div class="dash-section-title" style="padding:0 0 10px 0" id="dashCurveTitle">Readiness Curve</div>
+            <svg viewBox="0 0 480 220" id="dashCurveSvg" style="width:100%;height:auto"></svg>
+          </div>
+        </div>
+
       </div>
-      <div class="section-label">KPI milestones</div>
-      <div class="kpi-list" id="kpiList"><div class="spinner-wrap"><div class="spinner"></div></div></div>
     </div>
 
-    <!-- CHECKLIST -->
+    <!-- CHECKLIST — gantt-style weekly grid, click cell to tick -->
     <div class="view" id="view-checklist">
       <div class="role-filter-wrap" id="roleFilterWrap"></div>
-      <div id="taskListContainer"></div>
+      <div class="gantt-scroll-wrap">
+        <table class="gantt-table" id="ganttTable"></table>
+      </div>
+    </div>
+
+    <!-- KPIs (moved off dashboard) -->
+    <div class="view" id="view-kpis">
+      <div class="section-label">KPI milestones</div>
+      <div class="kpi-list" id="kpiList"><div class="spinner-wrap"><div class="spinner"></div></div></div>
     </div>
 
     <!-- ACTIONS -->
@@ -974,6 +1132,7 @@ async function loadAll() {
 
   renderDashboard();
   renderChecklist();
+  renderKpis();
   renderActions();
   renderProgress();
 }
@@ -986,33 +1145,162 @@ function renderDashboard() {
   const behind = Object.values(statuses).filter(s => s.status === 'behind').length;
   const targetPct = weeksOut >= 12 ? 0 : weeksOut <= 0 ? 100 : Math.round((1 - weeksOut / 12) * 100);
   const variance = pct - targetPct;
-
   const openActions = actions.filter(a => a.status === 'Open' || a.status === 'Overdue').length;
+  const closedActions = actions.filter(a => a.status === 'Closed').length;
 
-  document.getElementById('metricsGrid').innerHTML = `
-    <div class="metric-card">
-      <div class="metric-label">Readiness</div>
-      <div class="metric-val ${pct < 50 ? 'warning' : 'success'}">${pct}%</div>
-      <div class="metric-sub">${done} of ${total} tasks done</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Variance</div>
-      <div class="metric-val ${variance < -20 ? 'danger' : variance < 0 ? 'warning' : 'success'}">${variance >= 0 ? '+' : ''}${variance}%</div>
-      <div class="metric-sub">vs ${targetPct}% target</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Weeks out</div>
-      <div class="metric-val ${weeksOut <= 2 ? 'danger' : 'neutral'}">${weeksOut >= 0 ? weeksOut : Math.abs(weeksOut)}</div>
-      <div class="metric-sub">${weeksOut >= 0 ? 'weeks to shutdown' : 'weeks post shutdown'}</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Open actions</div>
-      <div class="metric-val ${openActions > 0 ? 'danger' : 'success'}">${openActions}</div>
-      <div class="metric-sub">${behind} tasks behind</div>
-    </div>
+  // ── Header block ──
+  const [sy, sm, sd] = (config.startDate || '2099-01-01').split('-').map(Number);
+  const startDateObj = new Date(sy, sm - 1, sd);
+  document.getElementById('dh-name').textContent = config.shutdownName || '—';
+  document.getElementById('dh-today').textContent = new Date().toLocaleDateString('en-AU');
+  document.getElementById('dh-start').textContent = startDateObj.toLocaleDateString('en-AU', { day:'2-digit', month:'short' });
+  document.getElementById('dh-duration').textContent = config.duration || '—';
+  document.getElementById('dh-weeksout').textContent = (weeksOut >= 0 ? weeksOut : Math.abs(weeksOut)) + (weeksOut >= 0 ? ' WKS' : ' WKS POST');
+  document.getElementById('dh-daysout').textContent = (weeksOut >= 0 ? weeksOut*7 : -(Math.abs(weeksOut)*7)) + ' Days';
+
+  const actualEl = document.getElementById('dh-actual');
+  actualEl.textContent = pct + '%';
+  actualEl.style.background = pct >= 80 ? 'var(--green-bg)' : pct >= 50 ? 'var(--amber-bg)' : 'var(--red-bg)';
+  actualEl.style.color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--amber-dark)' : 'var(--red)';
+
+  // ── Phase chevrons (Planning / Scheduling / Execution) ──
+  const phaseColors = { Planning: '#5a6a80', Scheduling: '#8a98a8', Execution: '#c4ccd6' };
+  const phases = ['Planning', 'Scheduling', 'Execution'];
+  // Determine active phase by weeksOut: Planning > 5wks out, Scheduling 1-5wks, Execution <1wk
+  let activePhase = weeksOut > 5 ? 'Planning' : weeksOut >= 1 ? 'Scheduling' : 'Execution';
+  document.getElementById('dashPhases').innerHTML = phases.map(p => {
+    const isActive = p === activePhase;
+    return `<div class="dash-phase" style="background:${isActive ? 'var(--navy)' : '#b8c0cc'}">${p}</div>`;
+  }).join('');
+
+  // ── KPI summary strip (compact cells) ──
+  document.getElementById('dashKpiStrip').innerHTML = kpis.map(k => {
+    const days = Number(k.daysLeft);
+    const kpct = Number(k.actualPct) || 0;
+    let cls = 'future', barColor = 'var(--teal)';
+    if (kpct >= 100)     { cls = 'ok';      barColor = 'var(--green)'; }
+    else if (days < 0)   { cls = 'overdue'; barColor = 'var(--red)'; }
+    else if (days < 14)  { cls = 'soon';    barColor = 'var(--amber)'; }
+    return `<div class="dash-kpi-cell ${cls}">
+      <div class="dash-kpi-cell-name">${k.name}</div>
+      <div class="dash-kpi-cell-meta"><span>W${k.weekDue}</span><span>${kpct}%</span></div>
+      <div class="dash-kpi-cell-bar"><div class="dash-kpi-cell-fill" style="width:${kpct}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join('');
+
+  // ── Role readiness timeline table ──
+  const roles = [...new Set(tasks.map(t => t.role))];
+  const maxWeek = 12;
+  const weekCols = [];
+  for (let w = maxWeek; w >= -2; w--) weekCols.push(w);
+
+  let timelineHtml = '<thead><tr><th class="gantt-task-header" style="position:static">Weekly Totals</th>';
+  weekCols.forEach(w => {
+    const isCurrent = w === weeksOut;
+    timelineHtml += `<th class="gantt-week-header ${isCurrent ? 'gantt-current' : ''}">${w}</th>`;
+  });
+  timelineHtml += '</tr></thead><tbody>';
+
+  roles.forEach(role => {
+    const roleTasks = tasks.filter(t => t.role === role);
+    const done2 = roleTasks.filter(t => statuses[t.taskId]?.status === 'done').length;
+    const pctRole = roleTasks.length ? Math.round(done2/roleTasks.length*100) : 0;
+    timelineHtml += `<tr><td class="role-label">${role} <span style="float:right;font-weight:700">${pctRole}%</span></td>`;
+    weekCols.forEach(w => {
+      // Determine if any task in this role is due at this week and its status
+      const tasksAtWeek = roleTasks.filter(t => Number(t.weekDue) === w);
+      let cellPct = 0, cellColor = 'transparent';
+      if (tasksAtWeek.length) {
+        const doneAtWeek = tasksAtWeek.filter(t => statuses[t.taskId]?.status === 'done').length;
+        cellPct = Math.round(doneAtWeek / tasksAtWeek.length * 100);
+        cellColor = cellPct >= 100 ? '#1D9E75' : cellPct > 0 ? '#EF9F27' : (w <= weeksOut ? '#E24B4A' : 'transparent');
+      }
+      timelineHtml += `<td style="background:${cellColor};color:${cellColor!=='transparent'?'white':'inherit'};font-weight:700">${tasksAtWeek.length ? cellPct+'%' : ''}</td>`;
+    });
+    timelineHtml += '</tr>';
+  });
+  timelineHtml += '</tbody>';
+  document.getElementById('dashTimelineTable').innerHTML = timelineHtml;
+
+  // ── Action pie chart ──
+  document.getElementById('dh-actions-done').textContent = closedActions;
+  document.getElementById('dh-actions-open').textContent = openActions;
+  const totalActionsForPie = closedActions + openActions;
+  const openFraction = totalActionsForPie ? openActions / totalActionsForPie : 0;
+  const pieSvg = document.getElementById('dashPieSvg');
+  if (totalActionsForPie === 0) {
+    pieSvg.innerHTML = '<circle cx="60" cy="60" r="50" fill="var(--border)"/><text x="60" y="64" text-anchor="middle" font-size="11" fill="var(--text-muted)">No actions</text>';
+  } else {
+    const angle = openFraction * 360;
+    const r = 50, cx = 60, cy = 60;
+    function polarToXY(deg) {
+      const rad = (deg - 90) * Math.PI / 180;
+      return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+    }
+    const [x1,y1] = polarToXY(0);
+    const [x2,y2] = polarToXY(angle);
+    const largeArc = angle > 180 ? 1 : 0;
+    const openPath = angle > 0 ? `M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z` : '';
+    pieSvg.innerHTML = `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--green)"/>
+      ${openPath ? `<path d="${openPath}" fill="var(--red)"/>` : ''}
+      <circle cx="${cx}" cy="${cy}" r="28" fill="var(--white)"/>
+      <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">${Math.round((1-openFraction)*100)}%</text>
+    `;
+  }
+
+  // ── Readiness curve (Planned vs Actual vs Target, no error bars) ──
+  document.getElementById('dashCurveTitle').textContent = (config.shutdownName || 'Shutdown') + ' — Readiness Curve';
+  const curveWeeks = [];
+  for (let w = 12; w >= -2; w--) curveWeeks.push(w);
+  const W = 480, H = 220, padL = 30, padR = 10, padT = 14, padB = 24;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const xFor = (i) => padL + (i / (curveWeeks.length - 1)) * plotW;
+  const yFor = (val) => padT + (1 - val/100) * plotH;
+
+  // Target: S-curve from 0% at W12 to 100% at W0, flat after
+  const targetSeries = curveWeeks.map(w => w >= 0 ? Math.max(0, Math.round((1 - w/12) * 100)) : 100);
+  // Actual: only plotted up to current week, flat/empty after (estimate based on overall pct distributed)
+  const actualSeries = curveWeeks.map(w => {
+    if (w < weeksOut) return null; // future, not yet happened
+    // crude distribution: scale down linearly from current pct at weeksOut to 0 at w12
+    const span = 12 - weeksOut || 1;
+    const progress = (12 - w) / span;
+    return Math.round(Math.min(pct, pct * progress / ((12-weeksOut)/span || 1)));
+  });
+
+  function pathFor(series) {
+    let d = '';
+    series.forEach((v, i) => {
+      if (v === null || v === undefined) return;
+      const x = xFor(i), y = yFor(v);
+      d += (d === '' ? 'M' : 'L') + x + ',' + y + ' ';
+    });
+    return d.trim();
+  }
+
+  const gridLines = [0,20,40,60,80,100].map(v =>
+    `<line x1="${padL}" y1="${yFor(v)}" x2="${W-padR}" y2="${yFor(v)}" stroke="var(--border)" stroke-width="1"/>
+     <text x="${padL-6}" y="${yFor(v)+3}" text-anchor="end" font-size="8" fill="var(--text-muted)">${v}%</text>`
+  ).join('');
+
+  const xLabels = curveWeeks.map((w,i) =>
+    `<text x="${xFor(i)}" y="${H-6}" text-anchor="middle" font-size="8" fill="var(--text-muted)">${w}</text>`
+  ).join('');
+
+  document.getElementById('dashCurveSvg').innerHTML = `
+    ${gridLines}
+    <path d="${pathFor(targetSeries)}" fill="none" stroke="var(--teal)" stroke-width="2"/>
+    <path d="${pathFor(actualSeries)}" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+    ${xLabels}
+    <line x1="${xFor(curveWeeks.indexOf(weeksOut)>=0?curveWeeks.indexOf(weeksOut):0)}" y1="${padT}" x2="${xFor(curveWeeks.indexOf(weeksOut)>=0?curveWeeks.indexOf(weeksOut):0)}" y2="${H-padB}" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="3,3"/>
+    <rect x="${padL}" y="2" width="8" height="2" fill="var(--teal)"/><text x="${padL+12}" y="5" font-size="8" fill="var(--text-muted)">Target</text>
+    <rect x="${padL+60}" y="2" width="8" height="2" fill="var(--amber)"/><text x="${padL+72}" y="5" font-size="8" fill="var(--text-muted)">Actual</text>
   `;
+}
 
-  // KPIs — daysLeft and actualPct now calculated dynamically by GAS
+// ── KPI tab (tiles, separate from dashboard) ───────────────────
+function renderKpis() {
   const kpiHtml = kpis.map((k, idx) => {
     const days = Number(k.daysLeft);
     const pct  = Number(k.actualPct) || 0;
@@ -1067,7 +1355,6 @@ function renderDashboard() {
         <div class="kpi-linked-tasks">${linkedHtml}</div>
       </div>
     </div>`;
-  // Note: cards start open — .collapsed class hides the body
   }).join('');
   document.getElementById('kpiList').innerHTML = kpiHtml || '<div class="empty-state">No KPIs loaded</div>';
 }
@@ -1079,64 +1366,76 @@ function toggleKpi(idx) {
   card.classList.toggle('collapsed');
 }
 
-// ── Checklist ────────────────────────────────────────────────
+// ── Checklist — gantt-style weekly grid ─────────────────────────
 function renderChecklist() {
   const roles = [...new Set(tasks.map(t => t.role))];
 
   // Role filter
-  const isMyRole = currentUser.role !== 'Admin';
   let filterHtml = `<button class="role-chip ${activeRole === 'all' ? 'active' : ''}" onclick="setRole('all')">All roles</button>`;
   roles.forEach(r => {
-    filterHtml += `<button class="role-chip ${activeRole === r ? 'active' : ''}" onclick="setRole('${r}')">${r}</button>`;
+    filterHtml += `<button class="role-chip ${activeRole === r ? 'active' : ''}" onclick="setRole('${r.replace(/'/g,"\\'")}')">${r}</button>`;
   });
   document.getElementById('roleFilterWrap').innerHTML = filterHtml;
 
   const visibleRoles = activeRole === 'all' ? roles : [activeRole];
-  let html = '';
+
+  // Week columns: W12 down to W-2
+  const weekCols = [];
+  for (let w = 12; w >= -2; w--) weekCols.push(w);
+
+  let html = '<thead><tr><th class="gantt-task-header">Task</th>';
+  weekCols.forEach(w => {
+    const isCurrent = w === weeksOut;
+    html += `<th class="gantt-week-header ${isCurrent ? 'gantt-current' : ''}">${w}</th>`;
+  });
+  html += '</tr></thead><tbody>';
 
   visibleRoles.forEach(role => {
     const roleTasks = tasks.filter(t => t.role === role);
     const donePct = roleTasks.length ? Math.round(roleTasks.filter(t => statuses[t.taskId]?.status === 'done').length / roleTasks.length * 100) : 0;
-    const barColor = donePct >= 70 ? 'var(--green)' : donePct >= 40 ? 'var(--amber)' : 'var(--teal)';
 
-    html += `<div class="task-group-header">
-      <span class="tgh-name">${role}</span>
-      <div class="tgh-progress">
-        <div class="tgh-bar-wrap"><div class="tgh-bar" style="width:${donePct}%;background:${barColor}"></div></div>
-        <span class="tgh-pct">${donePct}%</span>
-      </div>
-    </div>`;
+    html += `<tr class="gantt-role-row"><td colspan="${weekCols.length + 1}">${role} — ${donePct}% complete</td></tr>`;
 
     roleTasks.forEach(t => {
       const st = statuses[t.taskId];
-      const s = st?.status || 'none';
-      const isDone = s === 'done';
-      const isBehind = s === 'behind';
+      const status = st?.status || 'none';
       const canEdit = currentUser.role === 'Admin' || currentUser.role === role;
-      const weekLabel = 'W' + (t.weekDue >= 0 ? '+' + t.weekDue : t.weekDue);
-      const isOverdue = Number(t.weekDue) > -weeksOut && !isDone;
+      const weekDue = Number(t.weekDue);
+      const duration = Number(t.duration) || 1;
+      // Task spans from (weekDue + duration - 1) down to weekDue (counting down to zero)
+      const startWeek = weekDue + duration - 1;
+      const endWeek = weekDue;
 
-      let checkHtml = '';
-      if (isDone) checkHtml = `<div class="task-check done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>`;
-      else if (isBehind) checkHtml = `<div class="task-check behind"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>`;
-      else checkHtml = `<div class="task-check"></div>`;
+      html += `<tr class="gantt-task-row"><td class="gantt-task-name">${t.description}${t.kpiLink ? ` <span class="kpi-tag">${t.kpiLink}</span>` : ''}</td>`;
 
-      html += `<div class="task-item" onclick="${canEdit ? `toggleStatus('${t.taskId}','${role}')` : ''}">
-        ${checkHtml}
-        <div class="task-body">
-          <div class="task-title ${isDone ? 'done-text' : ''}">${t.description}</div>
-          <div class="task-meta">
-            <span>Dur: ${t.duration} wk${t.duration != 1 ? 's' : ''}</span>
-            ${t.kpiLink ? `<span class="kpi-tag">${t.kpiLink}</span>` : ''}
-            ${st ? `<span style="color:var(--text-muted)">· ${st.userName || ''}</span>` : ''}
-          </div>
-        </div>
-        <span class="week-badge ${isOverdue && !isDone ? 'overdue' : ''}">${weekLabel}</span>
-      </div>`;
+      weekCols.forEach(w => {
+        const inRange = w <= startWeek && w >= endWeek;
+        let cellClass = 'gantt-week-cell';
+        let cellContent = '';
+        if (inRange) {
+          cellClass += ' in-range';
+          if (status === 'done') { cellClass += ' done'; cellContent = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'; }
+          else if (status === 'behind') { cellClass += ' behind'; cellContent = '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'; }
+        }
+        if (w === weeksOut) cellClass += ' current-week';
+        if (!canEdit) cellClass += ' gantt-readonly';
+        const onclick = (canEdit && inRange) ? `onclick="toggleGanttCell('${t.taskId.replace(/'/g,"\\'")}','${role.replace(/'/g,"\\'")}')"` : '';
+        html += `<td class="${cellClass}" ${onclick}>${cellContent}</td>`;
+      });
+
+      html += '</tr>';
     });
   });
 
-  document.getElementById('taskListContainer').innerHTML = html || '<div class="empty-state">No tasks to show</div>';
+  html += '</tbody>';
+  document.getElementById('ganttTable').innerHTML = html;
+}
+
+function updateReadinessBar() {
+  const done = Object.values(statuses).filter(s => s.status === 'done').length;
+  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+  document.getElementById('readinessBar').style.width = pct + '%';
+  document.getElementById('readinessPct').textContent = pct + '%';
 }
 
 function setRole(r) {
@@ -1144,17 +1443,13 @@ function setRole(r) {
   renderChecklist();
 }
 
-async function toggleStatus(taskId, role) {
+async function toggleGanttCell(taskId, role) {
   if (currentUser.role !== 'Admin' && currentUser.role !== role) return;
   const current = statuses[taskId]?.status || 'none';
   const next = current === 'none' ? 'done' : current === 'done' ? 'behind' : 'none';
   statuses[taskId] = { status: next, userName: currentUser.name };
 
-  const done = Object.values(statuses).filter(s => s.status === 'done').length;
-  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
-  document.getElementById('readinessBar').style.width = pct + '%';
-  document.getElementById('readinessPct').textContent = pct + '%';
-
+  updateReadinessBar();
   renderChecklist();
   if (activeRole === role || activeRole === 'all') renderProgress();
 
