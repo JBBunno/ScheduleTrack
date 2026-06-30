@@ -1188,6 +1188,8 @@ async function loadAll() {
     statuses[r.taskId + ':' + wk] = { status: r.status, userName: r.userName };
   });
   if (DEMO_MODE) Object.entries(demoStatuses).forEach(([id,v]) => { statuses[id] = v; });
+  console.log('[SRD] Loaded', s.length, 'status rows ->', Object.keys(statuses).length, 'unique cells');
+  console.log('[SRD] Sample statuses:', Object.entries(statuses).slice(0, 5));
 
   // Compute weeks out — parse as local date to avoid UTC offset shifting the day
   const [sy, sm, sd] = (config.startDate || '2099-01-01').split('-').map(Number);
