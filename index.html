@@ -2060,10 +2060,17 @@ async function teSaveTasks() {
   const btn = document.getElementById('teTaskSaveBtn');
   btn.textContent = 'Saving…'; btn.disabled = true;
   try {
-    const res = await api({
-      action: 'saveTasks',
-      tasks: encodeURIComponent(JSON.stringify(teTasks))
+    const qs = new URLSearchParams({ action: 'saveTasks' }).toString();
+    const postRes = await fetch(GAS_URL + '?' + qs, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      redirect: 'follow',
+      body: encodeURIComponent(JSON.stringify(teTasks))
     });
+    const postText = await postRes.text();
+    let res;
+    try { res = JSON.parse(postText); } catch(e) { throw new Error('Bad response: ' + postText.slice(0,100)); }
+
     if (res.ok) {
       // Refresh local tasks array
       tasks = teTasks.map(t => ({ ...t }));
