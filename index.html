@@ -292,6 +292,9 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .overdue-tag{margin-left:auto;background:var(--red-bg);color:var(--red);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
 .complete-action-btn{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:5px 10px;border-radius:20px;background:var(--green);color:white;border:none;cursor:pointer}
 .complete-action-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.action-delete-btn{margin-left:auto;width:24px;height:24px;border-radius:50%;border:none;background:var(--red-bg);color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.action-delete-btn svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.action-delete-btn:hover{background:var(--red);color:white}
 .action-card.action-closed{opacity:.6}
 .action-done-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--green-bg);color:var(--green);margin-left:6px}
 
@@ -399,6 +402,30 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
 .te-save-btn{margin:0 14px 14px;padding:12px;border:none;border-radius:8px;background:var(--navy);color:var(--white);font-size:14px;font-weight:600;cursor:pointer;width:calc(100% - 28px)}
 .te-save-btn.success{background:var(--green)}
 .te-task-id{font-size:10px;color:var(--text-muted);font-family:monospace}
+
+/* ── Reset progress section ── */
+.reset-section{border:1px solid var(--red);overflow:hidden}
+.reset-head{background:var(--red) !important;color:white}
+.reset-body{padding:14px}
+.reset-warning-text{font-size:12px;color:var(--text-secondary);line-height:1.6;margin-bottom:14px}
+.reset-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  padding:12px;border:none;border-radius:8px;background:var(--red);color:white;
+  font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;
+}
+.reset-btn:hover{background:#b83333}
+.reset-confirm-overlay{position:fixed;inset:0;background:rgba(13,30,53,.6);display:none;align-items:center;justify-content:center;z-index:300;padding:24px}
+.reset-confirm-overlay.open{display:flex}
+.reset-confirm-card{background:white;border-radius:14px;padding:24px;max-width:380px;width:100%;text-align:center}
+.reset-confirm-icon{width:48px;height:48px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.reset-confirm-icon svg{width:24px;height:24px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.reset-confirm-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.reset-confirm-text{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:18px}
+.reset-confirm-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;text-align:center;margin-bottom:14px;font-family:inherit}
+.reset-confirm-btns{display:flex;gap:8px}
+.reset-confirm-cancel{flex:1;padding:11px;border:1px solid var(--border);border-radius:8px;background:white;color:var(--text-secondary);font-size:13px;font-weight:600;cursor:pointer}
+.reset-confirm-go{flex:1;padding:11px;border:none;border-radius:8px;background:var(--red);color:white;font-size:13px;font-weight:700;cursor:pointer}
+.reset-confirm-go:disabled{opacity:.4;cursor:not-allowed}
 
 /* ── Setup page ── */
 .setup-page{padding:14px;display:flex;flex-direction:column;gap:16px}
@@ -788,6 +815,23 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
           <div class="setup-note">Changing a task ID will lose its completion history. Safe to edit descriptions, week due, duration and KPI link freely.</div>
         </div>
 
+        <!-- Reset progress -->
+        <div class="setup-section reset-section">
+          <div class="setup-section-head reset-head">
+            Start a New Shutdown
+            <span style="font-size:10px;color:rgba(255,255,255,.6);text-transform:none;font-weight:400">clears all progress for the next planning cycle</span>
+          </div>
+          <div class="reset-body">
+            <p class="reset-warning-text">
+              This permanently clears every tick on the Checklist (all gantt cells reset to blank), all action register entries, and resets KPI actual % to 0. Task descriptions, roles, week-due/duration settings, and user PINs are kept as-is. This cannot be undone.
+            </p>
+            <button class="reset-btn" onclick="confirmResetProgress()">
+              <svg width="14" height="14" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Clear All Checklist Progress
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -831,6 +875,25 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
     </div>
   </div>
 
+</div>
+
+<div class="reset-confirm-overlay" id="resetConfirmOverlay">
+  <div class="reset-confirm-card">
+    <div class="reset-confirm-icon">
+      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+    </div>
+    <div class="reset-confirm-title">Clear all checklist progress?</div>
+    <div class="reset-confirm-text">
+      This will permanently remove every tick on the Checklist, all open and closed actions, and reset KPI completion to 0%.
+      Task list, week-due/duration, and PINs are kept. This cannot be undone.
+      <br><br>Type <strong>RESET</strong> below to confirm.
+    </div>
+    <input type="text" class="reset-confirm-input" id="resetConfirmInput" placeholder="Type RESET" oninput="checkResetConfirmInput()">
+    <div class="reset-confirm-btns">
+      <button class="reset-confirm-cancel" onclick="closeResetConfirm()">Cancel</button>
+      <button class="reset-confirm-go" id="resetConfirmGoBtn" onclick="executeResetProgress()" disabled>Clear Everything</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1682,12 +1745,16 @@ function renderActions() {
     const isOverdue = Number(a.daysLeft) < 0;
     const priClass = a.priority === 'High' ? 'high' : 'medium';
     const isClosed = a.status === 'Closed';
+    const canDelete = currentUser.role === 'Admin';
     return `<div class="action-card ${isClosed ? 'action-closed' : ''}">
       <div class="action-card-body">
         <div class="action-priority-row">
           <div class="priority-dot ${priClass}"></div>
           <span class="priority-label ${priClass}">${a.priority}</span>
           ${isClosed ? '<span class="action-done-badge">Completed</span>' : ''}
+          ${canDelete ? `<button class="action-delete-btn" onclick="deleteActionItem('${a.actionId}')" title="Delete this action">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>` : ''}
         </div>
         <div class="action-text">${a.description}</div>
       </div>
@@ -1702,6 +1769,17 @@ function renderActions() {
     </div>`;
   }).join('');
   document.getElementById('actionListContainer').innerHTML = html;
+}
+
+async function deleteActionItem(actionId) {
+  const action = actions.find(a => a.actionId === actionId);
+  if (!action) return;
+  if (!confirm(`Delete this action permanently?\n\n"${action.description}"\n\nThis cannot be undone.`)) return;
+  actions = actions.filter(a => a.actionId !== actionId);
+  renderActions();
+  renderDashboard(); // refresh action pie chart
+  await api({ action: 'deleteAction', actionId });
+  showToast('Action deleted');
 }
 
 async function completeAction(actionId) {
@@ -2087,6 +2165,47 @@ async function teSaveTasks() {
     showToast('Error: ' + e.message);
     btn.textContent = 'Save tasks'; btn.disabled = false;
   }
+}
+
+// ── Reset progress (new shutdown cycle) ─────────────────────────
+function confirmResetProgress() {
+  document.getElementById('resetConfirmInput').value = '';
+  document.getElementById('resetConfirmGoBtn').disabled = true;
+  document.getElementById('resetConfirmOverlay').classList.add('open');
+}
+function closeResetConfirm() {
+  document.getElementById('resetConfirmOverlay').classList.remove('open');
+}
+function checkResetConfirmInput() {
+  const val = document.getElementById('resetConfirmInput').value.trim();
+  document.getElementById('resetConfirmGoBtn').disabled = (val !== 'RESET');
+}
+
+async function executeResetProgress() {
+  const btn = document.getElementById('resetConfirmGoBtn');
+  btn.textContent = 'Clearing…'; btn.disabled = true;
+  try {
+    const res = await api({ action: 'resetProgress' });
+    if (res.ok) {
+      // Clear local state immediately
+      statuses = {};
+      actions = [];
+      kpis.forEach(k => { k.actualPct = 0; });
+      closeResetConfirm();
+      updateReadinessBar();
+      renderDashboard();
+      renderChecklist();
+      renderKpis();
+      renderActions();
+      renderProgress();
+      showToast('All progress cleared — ready for a new shutdown cycle');
+    } else {
+      showToast('Error: ' + (res.error || 'Unknown'));
+    }
+  } catch(e) {
+    showToast('Error: ' + e.message);
+  }
+  btn.textContent = 'Clear Everything'; btn.disabled = false;
 }
 
 // ── Setup ─────────────────────────────────────────────────────
