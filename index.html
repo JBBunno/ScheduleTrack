@@ -1005,6 +1005,30 @@ let config = {};
 let tasks = [];
 let statuses = {};
 
+// ── Global planned/actual cell model ────────────────────────────
+// Every tracked gantt cell across all tasks: {taskId, week}
+function allTrackedCells(taskList) {
+  const cells = [];
+  taskList.forEach(t => {
+    const weekDue = Number(t.weekDue);
+    const duration = Number(t.duration) || 1;
+    const startWeek = weekDue + duration - 1;
+    for (let w = startWeek; w >= weekDue; w--) cells.push({ taskId: t.taskId, week: w });
+  });
+  return cells;
+}
+// Planned = cells at or before the current week (already elapsed/active)
+function plannedCellsFor(taskList) {
+  return allTrackedCells(taskList).filter(c => c.week >= weeksOut);
+}
+// Actual = of the planned cells, how many are ticked done
+function readinessPctFor(taskList) {
+  const planned = plannedCellsFor(taskList);
+  if (!planned.length) return 0;
+  const done = planned.filter(c => statuses[cellKey(c.taskId, c.week)]?.status === 'done').length;
+  return Math.round(done / planned.length * 100);
+}
+
 // ── Status helpers — statuses keyed by "taskId:week" ────────────
 // Returns true if ANY tracked week for this task is marked done
 function taskIsDone(taskId) {
@@ -1209,9 +1233,7 @@ async function loadAll() {
   document.getElementById('weeksPill').style.background = weeksOut <= 2 ? 'var(--red)' : weeksOut <= 5 ? 'var(--amber)' : 'var(--amber)';
 
   // Readiness
-  const done = tasks.filter(t => taskIsDone(t.taskId)).length;
-  const total = tasks.length;
-  const pct = total ? Math.round((done / total) * 100) : 0;
+  const pct = readinessPctFor(tasks);
   document.getElementById('readinessBar').style.width = pct + '%';
   document.getElementById('readinessPct').textContent = pct + '%';
 
@@ -1224,9 +1246,7 @@ async function loadAll() {
 
 // ── Dashboard ────────────────────────────────────────────────
 function renderDashboard() {
-  const done = tasks.filter(t => taskIsDone(t.taskId)).length;
-  const total = tasks.length;
-  const pct = total ? Math.round((done / total) * 100) : 0;
+  const pct = readinessPctFor(tasks);
   const behind = tasks.filter(t => taskIsBehind(t.taskId)).length;
   const targetPct = weeksOut >= 12 ? 0 : weeksOut <= 0 ? 100 : Math.round((1 - weeksOut / 12) * 100);
   const variance = pct - targetPct;
@@ -1532,7 +1552,7 @@ function renderChecklist() {
 
   visibleRoles.forEach(role => {
     const roleTasks = tasks.filter(t => t.role === role);
-    const donePct = roleTasks.length ? Math.round(roleTasks.filter(t => taskIsDone(t.taskId)).length / roleTasks.length * 100) : 0;
+    const donePct = readinessPctFor(roleTasks);
 
     html += `<tr class="gantt-role-row"><td colspan="${weekCols.length + 1}">${role} — ${donePct}% complete</td></tr>`;
 
@@ -1579,8 +1599,7 @@ function renderChecklist() {
 }
 
 function updateReadinessBar() {
-  const done = tasks.filter(t => taskIsDone(t.taskId)).length;
-  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
+  const pct = readinessPctFor(tasks);
   document.getElementById('readinessBar').style.width = pct + '%';
   document.getElementById('readinessPct').textContent = pct + '%';
 }
@@ -1717,7 +1736,7 @@ function renderProgress() {
     const roleTasks = tasks.filter(t => t.role === role);
     const done = roleTasks.filter(t => taskIsDone(t.taskId)).length;
     const behind = roleTasks.filter(t => taskIsBehind(t.taskId)).length;
-    const pct = roleTasks.length ? Math.round((done / roleTasks.length) * 100) : 0;
+    const pct = readinessPctFor(roleTasks);
     const cls = pct >= 70 ? 'success' : pct >= 40 ? 'warning' : 'danger';
     const barColor = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--red)';
     return `<div class="role-row">
@@ -1760,7 +1779,7 @@ async function generateReport() {
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter(t => taskIsDone(t.taskId)).length;
   const behindTasks = tasks.filter(t => taskIsBehind(t.taskId)).length;
-  const pct = totalTasks ? Math.round(doneTasks / totalTasks * 100) : 0;
+  const pct = readinessPctFor(tasks);
   const targetPct = weeksOut >= 12 ? 0 : weeksOut <= 0 ? 100 : Math.round((1 - weeksOut / 12) * 100);
   const variance = pct - targetPct;
 
@@ -1769,7 +1788,7 @@ async function generateReport() {
     const rt = tasks.filter(t => t.role === role);
     const d = rt.filter(t => taskIsDone(t.taskId)).length;
     const b = rt.filter(t => taskIsBehind(t.taskId)).length;
-    return { role, total: rt.length, done: d, behind: b, pct: Math.round(d / rt.length * 100) };
+    return { role, total: rt.length, done: d, behind: b, pct: readinessPctFor(rt) };
   });
 
   // KPI status
@@ -1875,7 +1894,7 @@ async function exportReportDocx() {
 
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter(t => taskIsDone(t.taskId)).length;
-  const pct = totalTasks ? Math.round(doneTasks / totalTasks * 100) : 0;
+  const pct = readinessPctFor(tasks);
   const targetPct = weeksOut >= 12 ? 0 : weeksOut <= 0 ? 100 : Math.round((1 - weeksOut / 12) * 100);
   const variance = pct - targetPct;
   const openCount = actions.filter(a => a.status === 'Open' || a.status === 'Overdue').length;
