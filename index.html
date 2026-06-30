@@ -603,7 +603,7 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sa
           <div class="dash-header-mid">
             <div class="dash-measure-label">MEASURE</div>
             <div class="dash-measure-row">
-              <span>Target</span><span class="dash-target-val">100%</span>
+              <span>Target</span><span class="dash-target-val" id="dh-target">—</span>
             </div>
             <div class="dash-measure-row dash-actual-row">
               <span>Actual</span><span class="dash-actual-val" id="dh-actual">—</span>
@@ -1233,6 +1233,8 @@ function renderDashboard() {
   document.getElementById('dh-duration').textContent = config.duration || '—';
   document.getElementById('dh-weeksout').textContent = (weeksOut >= 0 ? weeksOut : Math.abs(weeksOut)) + (weeksOut >= 0 ? ' WKS' : ' WKS POST');
   document.getElementById('dh-daysout').textContent = (weeksOut >= 0 ? weeksOut*7 : -(Math.abs(weeksOut)*7)) + ' Days';
+
+  document.getElementById('dh-target').textContent = targetPct + '%';
 
   const actualEl = document.getElementById('dh-actual');
   actualEl.textContent = pct + '%';
