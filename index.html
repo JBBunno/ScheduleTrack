@@ -206,8 +206,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 /* ── Mobile ── */
 @media(max-width:680px){
   .btn-hamburger{display:flex}
-  .topbar{padding:0 1rem}
+  .topbar{padding:0 0.75rem}
   .topbar-sub{display:none}
+  .page-switcher{display:none}
+  .topbar-right{gap:5px}
+  .btn-sm{padding:3px 7px;font-size:11px}
   .sidebar{
     position:fixed;top:0;bottom:0;left:0;
     width:280px;z-index:160;
@@ -271,6 +274,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
       <div class="empty"><div class="spinner"></div><p>Loading…</p></div>
     </div>
     <div class="sidebar-ft">
+      <div style="display:flex;gap:6px;margin-bottom:10px">
+        <a href="index.html" style="flex:1;text-align:center;padding:7px;border-radius:var(--radius);background:var(--gold);color:var(--navy);font-size:12px;font-weight:600;text-decoration:none">12-week</a>
+        <a href="checklist-short.html" style="flex:1;text-align:center;padding:7px;border-radius:var(--radius);background:var(--off);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;text-decoration:none">Short-form</a>
+      </div>
       <button class="btn btn-gold" style="width:100%" onclick="showNewProject()">+ New shutdown</button>
     </div>
   </aside>
@@ -979,6 +986,13 @@ function closeSidebar() {
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("sidebar-overlay").classList.remove("open");
   document.body.style.overflow = "";
+}
+
+// ── Hard refresh ──────────────────────────────────────────
+function hardRefresh() {
+  // Bust cache by appending timestamp, then reload
+  const url = window.location.href.split('?')[0] + '?v=' + Date.now();
+  window.location.replace(url);
 }
 
 init();
