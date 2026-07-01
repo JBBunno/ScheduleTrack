@@ -34,6 +34,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 .topbar-name{color:var(--white);font-size:14px;font-weight:600;letter-spacing:0.02em}
 .topbar-sub{color:var(--gold);font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* ── Page switcher ── */
+.page-switcher{display:flex;background:rgba(255,255,255,0.08);border-radius:var(--radius);padding:2px;gap:2px}
+.page-switch-btn{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,0.6);transition:all 0.15s;white-space:nowrap;text-decoration:none;display:flex;align-items:center}
+.page-switch-btn:hover{color:var(--white)}
+.page-switch-btn.active{background:rgba(255,255,255,0.15);color:var(--white)}
 .btn{padding:6px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;letter-spacing:0.01em}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8)}
 .btn-ghost:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.4);color:var(--white)}
@@ -245,6 +250,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
       <div class="topbar-name">Palm Crest</div>
       <div class="topbar-sub">Scheduling Solutions</div>
     </div>
+  </div>
+  <div class="page-switcher">
+    <a class="page-switch-btn active" href="checklist.html">12-week</a>
+    <a class="page-switch-btn" href="checklist-short.html">Short-form</a>
   </div>
   <div class="topbar-right">
     <button class="btn btn-ghost btn-sm" onclick="openReport()" id="btn-report" style="display:none">Planning report</button>
