@@ -345,14 +345,11 @@ async function get(params) {
 }
 
 async function post(body) {
-  // POST sends JSON — no URL encoding issues, no size limits
-  const r = await fetch(GAS_URL, {
-    method:"POST",
-    mode:"cors",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify(body)
-  });
-  return r.json();
+  // Encode entire JSON body as base64 and send via GET
+  // This avoids all CORS issues with GAS while keeping data intact
+  const json = JSON.stringify(body);
+  const b64  = btoa(unescape(encodeURIComponent(json)));
+  return get({p: b64});
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
