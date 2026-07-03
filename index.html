@@ -448,13 +448,17 @@ async function api(params) {
 // Save one week at a time — tiny URL, no size limits
 // sheetId is either a project id or "_tpl_<tplId>"
 async function saveWeekToGAS(sheetId, week) {
+  // btoa/base64 avoids URLSearchParams mangling JSON (spaces→+, etc)
+  const tasksB64 = btoa(unescape(encodeURIComponent(JSON.stringify(week.tasks))));
+  const titleB64 = btoa(unescape(encodeURIComponent(week.title)));
   return api({
     action:  "saveWeek",
     sheetId,
     weekNum: week.num,
-    title:   week.title,
-    tasks:   JSON.stringify(week.tasks),
-    phase:   week.phase||0
+    title:   titleB64,
+    tasks:   tasksB64,
+    phase:   week.phase||0,
+    enc:     "b64"
   });
 }
 
