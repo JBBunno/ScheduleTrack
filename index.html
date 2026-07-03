@@ -9,994 +9,946 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shutdown Checklist — Palm Crest</title>
 <style>
-:root {
-  --navy:    #0b1c33;
-  --gold:    #c19c4b;
-  --gold-lt: #d4b472;
-  --gold-dk: #8a6e32;
-  --white:   #ffffff;
-  --off:     #f4f2ed;
-  --text:    #1a1a1a;
-  --muted:   #6b6b6b;
-  --border:  #ddd8ce;
-  --success: #2d7a4f;
-  --radius:  6px;
-  --card-r:  10px;
-  --admin:   #7c3aed;
-  --admin-lt:#ede9fe;
-  --admin-bd:#c4b5fd;
+:root{
+  --navy:#0b1c33;--gold:#c19c4b;--gold-lt:#d4b472;--gold-dk:#8a6e32;
+  --white:#ffffff;--off:#f4f2ed;--text:#1a1a1a;--muted:#6b6b6b;
+  --border:#ddd8ce;--success:#2d7a4f;--danger:#c0392b;
+  --admin:#7c3aed;--admin-lt:#ede9fe;--admin-bd:#c4b5fd;
+  --radius:6px;--card-r:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var(--text);min-height:100vh}
 
-/* ── Top bar ── */
-.topbar{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100}
-.topbar-brand{display:flex;align-items:center;gap:10px}
+/* ── Topbar ── */
+.topbar{background:var(--navy);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;gap:12px}
+.topbar-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .topbar-logo{width:28px;height:28px;background:var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center}
-.topbar-logo svg{width:16px;height:16px}
 .topbar-name{color:var(--white);font-size:14px;font-weight:600;letter-spacing:0.02em}
 .topbar-sub{color:var(--gold);font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
-.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-/* ── Page switcher ── */
-.page-switcher{display:flex;background:rgba(255,255,255,0.08);border-radius:var(--radius);padding:2px;gap:2px}
-.page-switch-btn{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,0.6);transition:all 0.15s;white-space:nowrap;text-decoration:none;display:flex;align-items:center}
-.page-switch-btn:hover{color:var(--white)}
-.page-switch-btn.active{background:rgba(255,255,255,0.15);color:var(--white)}
-.btn{padding:6px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;letter-spacing:0.01em}
+.topbar-nav{display:flex;background:rgba(255,255,255,0.08);border-radius:var(--radius);padding:2px;gap:2px}
+.nav-btn{padding:5px 14px;border-radius:4px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,0.6);transition:all 0.15s;white-space:nowrap}
+.nav-btn:hover{color:var(--white)}
+.nav-btn.active{background:rgba(255,255,255,0.15);color:var(--white)}
+.nav-btn.admin-tab{color:rgba(196,181,253,0.7)}
+.nav-btn.admin-tab.active{background:var(--admin);color:white}
+.topbar-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.btn{padding:6px 14px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s}
 .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8)}
-.btn-ghost:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.4);color:var(--white)}
+.btn-ghost:hover{background:rgba(255,255,255,0.08);color:var(--white)}
 .btn-gold{background:var(--gold);color:var(--navy);font-weight:600}
 .btn-gold:hover{background:var(--gold-lt)}
-.btn-sm{padding:4px 10px;font-size:11px}
+.btn-admin{background:var(--admin);color:white}
+.btn-admin:hover{background:#6d28d9}
 .btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold-dk)}
-.btn-admin{background:var(--admin);color:white;border:none}
-.btn-admin:hover{background:#6d28d9}
-.btn-admin-off{background:transparent;border:1px solid var(--admin-bd);color:var(--admin)}
-.btn-admin-off:hover{background:var(--admin-lt)}
+.btn-danger{background:transparent;border:1px solid #fca5a5;color:var(--danger)}
+.btn-danger:hover{background:var(--danger);color:white;border-color:var(--danger)}
+.btn-sm{padding:4px 10px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:11px}
 
-/* admin mode banner */
-.admin-banner{display:none;background:var(--admin);color:white;text-align:center;padding:6px 12px;font-size:12px;font-weight:500;letter-spacing:0.02em}
+/* admin banner */
+.admin-banner{display:none;background:var(--admin);color:white;text-align:center;padding:6px;font-size:12px;font-weight:500}
 .admin-banner.on{display:block}
 
-/* ── Layout ── */
-.shell{display:flex;min-height:calc(100vh - 54px)}
-.sidebar{width:260px;background:var(--white);border-right:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column}
-.main{flex:1;padding:1.5rem;min-width:0}
+/* ── Views ── */
+.view{display:none;padding:1.5rem;max-width:960px;margin:0 auto}
+.view.active{display:block}
 
-/* ── Sidebar ── */
-.sidebar-hd{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.sidebar-hd h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)}
-.project-list{flex:1;overflow-y:auto}
-.project-item{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;gap:10px;transition:background 0.12s}
-.project-item:hover{background:var(--off)}
-.project-item.active{background:#f0ead8;border-left:3px solid var(--gold);padding-left:13px}
-.proj-name{font-size:13px;font-weight:500;color:var(--text);flex:1;line-height:1.3}
-.proj-pct{font-size:11px;font-weight:600;color:var(--muted)}
-.project-item.active .proj-pct{color:var(--gold-dk)}
-.sidebar-ft{padding:12px 16px;border-top:1px solid var(--border)}
-.proj-actions{display:none;gap:4px;flex-shrink:0}
-.admin-mode-sidebar .proj-actions{display:flex}
-.proj-act-btn{width:26px;height:26px;border-radius:4px;border:none;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
-.proj-act-btn.rename{background:var(--admin-lt);color:var(--admin)}
-.proj-act-btn.rename:hover{background:var(--admin);color:white}
-.proj-act-btn.del{background:#fee2e2;color:#dc2626}
-.proj-act-btn.del:hover{background:#dc2626;color:white}
-.admin-mode-sidebar .project-item{cursor:default}
-.admin-mode-sidebar .project-item .proj-name{cursor:pointer}
+/* ── Home view ── */
+.home-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.home-hd h2{font-size:18px;font-weight:600;color:var(--navy)}
+.shutdown-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.shutdown-card{background:var(--white);border:1px solid var(--border);border-radius:var(--card-r);padding:16px;cursor:pointer;transition:all 0.15s;position:relative}
+.shutdown-card:hover{box-shadow:0 3px 14px rgba(0,0,0,0.09);border-color:var(--gold)}
+.shutdown-card-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.shutdown-card-meta{font-size:11px;color:var(--muted);margin-bottom:12px}
+.shutdown-card-bar{height:6px;background:var(--off);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.shutdown-card-fill{height:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold));border-radius:3px}
+.shutdown-card-pct{font-size:11px;font-weight:600;color:var(--muted)}
+.shutdown-card-actions{position:absolute;top:10px;right:10px;display:none;gap:4px}
+.admin-active .shutdown-card-actions{display:flex}
+.card-act-btn{width:24px;height:24px;border-radius:4px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.card-act-btn.rename{background:var(--admin-lt);color:var(--admin)}
+.card-act-btn.rename:hover{background:var(--admin);color:white}
+.card-act-btn.del{background:#fee2e2;color:var(--danger)}
+.card-act-btn.del:hover{background:var(--danger);color:white}
+.empty-home{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-home h3{font-size:16px;font-weight:500;color:var(--navy);margin-bottom:8px}
+.empty-home p{font-size:13px;margin-bottom:20px}
 
-/* ── Modals ── */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:var(--white);border-radius:var(--card-r);padding:24px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
-.modal h3{font-size:15px;font-weight:600;margin-bottom:6px;color:var(--navy)}
-.modal p.sub{font-size:12px;color:var(--muted);margin-bottom:16px}
-.modal input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;margin-bottom:12px;outline:none;font-family:inherit}
-.modal input:focus{border-color:var(--gold)}
-.modal input.admin-input:focus{border-color:var(--admin)}
-.modal-btns{display:flex;gap:8px;justify-content:flex-end}
-.modal-err{font-size:12px;color:#c0392b;margin-bottom:10px;display:none}
-.modal-err.show{display:block}
+/* ── Template view ── */
+.tpl-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.tpl-hd h2{font-size:18px;font-weight:600;color:var(--navy)}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.tpl-card{background:var(--white);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.tpl-card-hd{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.tpl-card-name{font-size:13px;font-weight:600;color:var(--navy);flex:1}
+.tpl-card-meta{font-size:11px;color:var(--muted)}
+.tpl-card-actions{display:flex;gap:6px}
+.tpl-weeks{padding:10px 14px}
+.tpl-week-row{font-size:12px;color:var(--muted);padding:3px 0;border-bottom:1px solid #f5f3ee;display:flex;justify-content:space-between}
+.tpl-week-row:last-child{border-bottom:none}
+.tpl-week-title{color:var(--text);font-weight:500}
+.tpl-week-count{color:var(--muted)}
 
-/* ── Page header ── */
-.page-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:12px;flex-wrap:wrap}
-.page-hd-left h2{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:2px}
-.page-hd-left p{font-size:12px;color:var(--muted)}
-
-/* ── Summary bar ── */
+/* ── Tracking view ── */
+.track-back{display:flex;align-items:center;gap:8px;margin-bottom:1rem;cursor:pointer;color:var(--muted);font-size:13px;width:fit-content}
+.track-back:hover{color:var(--gold-dk)}
+.track-back svg{width:16px;height:16px}
+.track-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:12px;flex-wrap:wrap}
+.track-hd-left h2{font-size:18px;font-weight:600;color:var(--navy);margin-bottom:2px}
+.track-hd-left p{font-size:12px;color:var(--muted)}
+.track-hd-right{display:flex;gap:8px;flex-wrap:wrap}
 .summary-bar{background:var(--white);border:1px solid var(--border);border-radius:var(--card-r);padding:14px 18px;margin-bottom:1.25rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.summary-stat{text-align:center}
 .summary-stat .val{font-size:20px;font-weight:700;color:var(--navy);line-height:1}
 .summary-stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-top:2px}
 .summary-divider{width:1px;height:36px;background:var(--border)}
-.progress-track{flex:1;height:8px;background:var(--off);border-radius:4px;overflow:hidden;min-width:120px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold));border-radius:4px;transition:width 0.4s ease}
-
-/* ── Phase legend ── */
-.phase-legend{display:flex;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap}
-.ph-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:500}
-.ph-dot{width:8px;height:8px;border-radius:50%}
+.progress-track{flex:1;height:8px;background:var(--off);border-radius:4px;overflow:hidden;min-width:100px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-dk),var(--gold));border-radius:4px;transition:width 0.4s}
 
 /* ── Week cards ── */
-.weeks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.weeks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
 .week-card{background:var(--white);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;transition:box-shadow 0.15s,border-color 0.15s}
 .week-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.07)}
 .week-card.done{border-color:#a3c9a8}
-.week-card.admin-mode{border-color:var(--admin-bd)}
+.week-card.edit-mode{border-color:var(--admin-bd)}
 .week-hd{padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
-.week-num-badge{font-size:10px;font-weight:700;letter-spacing:0.04em;padding:2px 7px;border-radius:4px;white-space:nowrap;text-transform:uppercase}
-.ph-1 .week-num-badge{background:#e8f5ee;color:#1e6b3c}
-.ph-2 .week-num-badge{background:#fff3e0;color:#8a4500}
-.ph-3 .week-num-badge{background:#e8eef8;color:#1a3a6e}
-.ph-4 .week-num-badge{background:#fdecea;color:#9b2020}
-.week-title-txt{font-size:12px;font-weight:600;color:var(--text);flex:1}
-.week-title-input{font-size:12px;font-weight:600;color:var(--navy);flex:1;border:1px solid var(--admin-bd);border-radius:4px;padding:2px 6px;background:var(--admin-lt);outline:none;font-family:inherit}
-.week-title-input:focus{border-color:var(--admin)}
-.week-pct{font-size:11px;color:var(--muted);font-weight:500}
+.week-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:0.04em;flex-shrink:0}
+.ph-1 .week-badge{background:#e8f5ee;color:#1e6b3c}
+.ph-2 .week-badge{background:#fff3e0;color:#8a4500}
+.ph-3 .week-badge{background:#e8eef8;color:#1a3a6e}
+.ph-4 .week-badge{background:#fdecea;color:#9b2020}
+.ph-0 .week-badge{background:#f3f4f6;color:#374151}
+.week-title{font-size:12px;font-weight:600;color:var(--text);flex:1}
+.week-title-input{font-size:12px;font-weight:600;color:var(--navy);flex:1;border:1px solid var(--admin-bd);border-radius:4px;padding:2px 6px;background:var(--admin-lt);outline:none;font-family:inherit;min-width:0}
+.week-pct{font-size:11px;color:var(--muted);font-weight:500;flex-shrink:0}
 .week-card.done .week-pct{color:var(--success)}
 .week-body{padding:8px 12px}
+.save-ind{font-size:10px;color:var(--admin);opacity:0;transition:opacity 0.3s;flex-shrink:0}
+.save-ind.show{opacity:1}
 
-/* ── Task rows (normal) ── */
-.task-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f0ede6;cursor:pointer;transition:background 0.1s}
+/* task rows - normal */
+.task-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f0ede6;cursor:pointer}
 .task-row:last-child{border-bottom:none}
 .task-row:hover{background:#faf8f4;margin:0 -12px;padding-left:12px;padding-right:12px}
 .cb{width:15px;height:15px;border:1.5px solid #ccc;border-radius:3px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--white)}
 .cb.checked{background:var(--gold-dk);border-color:var(--gold-dk)}
 .cb.checked::after{content:'';display:block;width:8px;height:5px;border-left:2px solid white;border-bottom:2px solid white;transform:rotate(-45deg);margin-top:-1px}
 .task-txt{font-size:12px;color:#444;line-height:1.4;flex:1}
-.task-txt.done-txt{color:#aaa;text-decoration:line-through}
+.task-txt.done{color:#aaa;text-decoration:line-through}
 .task-ts{font-size:10px;color:var(--muted);margin-top:1px;display:block}
+.empty-tile{padding:16px 0;text-align:center;font-size:11px;color:var(--muted);font-style:italic}
 
-/* ── Task rows (admin) ── */
+/* task rows - edit */
 .task-edit-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0ede6}
 .task-edit-row:last-child{border-bottom:none}
 .task-edit-input{flex:1;font-size:12px;padding:4px 8px;border:1px solid var(--admin-bd);border-radius:4px;background:var(--admin-lt);outline:none;color:var(--text);font-family:inherit}
 .task-edit-input:focus{border-color:var(--admin)}
-.task-del-btn{width:20px;height:20px;border-radius:3px;border:1px solid #fca5a5;background:#fee2e2;color:#dc2626;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
-.task-del-btn:hover{background:#dc2626;color:white;border-color:#dc2626}
+.task-del-btn{width:20px;height:20px;border-radius:3px;border:1px solid #fca5a5;background:#fee2e2;color:var(--danger);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.task-del-btn:hover{background:var(--danger);color:white}
 .task-add-row{margin-top:6px;display:flex;gap:6px}
 .task-add-input{flex:1;font-size:12px;padding:4px 8px;border:1px dashed var(--admin-bd);border-radius:4px;background:white;outline:none;font-family:inherit;color:var(--muted)}
 .task-add-input:focus{border-color:var(--admin);color:var(--text)}
-.task-add-btn{padding:4px 8px;border-radius:4px;border:none;background:var(--admin);color:white;font-size:11px;cursor:pointer;white-space:nowrap}
+.task-add-btn{padding:4px 8px;border-radius:4px;border:none;background:var(--admin);color:white;font-size:11px;cursor:pointer}
 .task-add-btn:hover{background:#6d28d9}
-.save-indicator{font-size:10px;color:var(--admin);opacity:0;transition:opacity 0.3s;margin-left:4px}
-.save-indicator.show{opacity:1}
 
-/* ── Empty / loading ── */
-.empty{padding:3rem 2rem;text-align:center;color:var(--muted)}
-.empty h3{font-size:15px;font-weight:500;margin-bottom:6px;color:var(--navy)}
-.empty p{font-size:12px}
-.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* tile count controls */
+.tile-ctrl{display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;padding:10px 14px;background:var(--admin-lt);border:1px solid var(--admin-bd);border-radius:var(--card-r)}
+.tile-ctrl span{font-size:12px;color:var(--admin);font-weight:500;flex:1}
+.tile-btn{width:28px;height:28px;border-radius:4px;border:1px solid var(--admin-bd);background:white;color:var(--admin);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600}
+.tile-btn:hover{background:var(--admin);color:white;border-color:var(--admin)}
+.tile-btn:disabled{opacity:0.35;cursor:not-allowed}
+.tile-count{font-size:13px;font-weight:600;color:var(--admin);min-width:64px;text-align:center}
+
+/* ── Modals ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:var(--white);border-radius:var(--card-r);padding:24px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:6px;color:var(--navy)}
+.modal p.sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+.modal label{font-size:12px;font-weight:500;color:var(--text);display:block;margin-bottom:4px}
+.modal input,.modal select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;margin-bottom:14px;outline:none;font-family:inherit;background:white}
+.modal input:focus,.modal select:focus{border-color:var(--gold)}
+.modal input.adm:focus{border-color:var(--admin)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.modal-err{font-size:12px;color:var(--danger);margin-bottom:10px;display:none}
+.modal-err.show{display:block}
 
 /* ── Report ── */
-.report-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
-.report-modal-bg.open{display:flex}
+.report-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.report-bg.open{display:flex}
 .report-box{background:var(--white);border-radius:var(--card-r);width:100%;max-width:680px;margin:auto}
-.report-header{background:var(--navy);color:var(--white);padding:20px 24px;border-radius:var(--card-r) var(--card-r) 0 0;display:flex;align-items:flex-start;justify-content:space-between}
-.report-header h2{font-size:17px;font-weight:600}
-.report-header p{font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px}
+.report-hd{background:var(--navy);color:var(--white);padding:20px 24px;border-radius:var(--card-r) var(--card-r) 0 0;display:flex;align-items:flex-start;justify-content:space-between}
+.report-hd h2{font-size:17px;font-weight:600}
+.report-hd p{font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px}
 .report-body{padding:20px 24px}
 .report-section{margin-bottom:20px}
 .report-section h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.report-week-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.report-week-label{font-size:12px;font-weight:500;color:var(--navy);width:160px;flex-shrink:0}
-.report-track{flex:1;height:6px;background:var(--off);border-radius:3px;overflow:hidden}
-.report-fill{height:100%;background:var(--gold-dk);border-radius:3px}
-.report-pct{font-size:11px;font-weight:600;color:var(--muted);width:36px;text-align:right;flex-shrink:0}
-.incomplete-item{display:flex;gap:8px;font-size:12px;color:var(--text);padding:5px 0;border-bottom:1px solid #f5f3ee}
-.incomplete-item:last-child{border-bottom:none}
-.incomplete-week{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);width:60px;flex-shrink:0;padding-top:1px}
-.report-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.rw-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.rw-label{font-size:12px;font-weight:500;color:var(--navy);width:165px;flex-shrink:0}
+.rw-track{flex:1;height:6px;background:var(--off);border-radius:3px;overflow:hidden}
+.rw-fill{height:100%;background:var(--gold-dk);border-radius:3px}
+.rw-pct{font-size:11px;font-weight:600;color:var(--muted);width:36px;text-align:right;flex-shrink:0}
+.inc-item{display:flex;gap:8px;font-size:12px;color:var(--text);padding:5px 0;border-bottom:1px solid #f5f3ee}
+.inc-item:last-child{border-bottom:none}
+.inc-wk{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--muted);width:56px;flex-shrink:0;padding-top:1px}
+.report-ft{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
 
-/* ── Hamburger (mobile only) ── */
-.btn-hamburger{display:none;flex-direction:column;justify-content:center;gap:4px;width:36px;height:36px;padding:6px;background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);cursor:pointer;flex-shrink:0}
-.btn-hamburger span{display:block;height:2px;background:var(--white);border-radius:2px;transition:all 0.2s}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:150}
-.sidebar-overlay.open{display:block}
+/* ── Spinner / empty ── */
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{text-align:center;padding:3rem;color:var(--muted);font-size:13px}
 
 /* ── Print ── */
 @media print{
-  .topbar,.sidebar,.page-hd-right,.report-footer,.modal-bg,.report-modal-bg .btn,.admin-banner,.btn-hamburger,.sidebar-overlay{display:none!important}
-  .shell{display:block}
-  .main{padding:0}
-  .report-box{max-width:100%;box-shadow:none;border:none}
-  .report-modal-bg{position:static!important;display:block!important;padding:0!important;background:none!important}
-  .report-header{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .topbar,.admin-banner,.track-back,.track-hd-right,.report-ft,.modal-bg{display:none!important}
+  .report-box{max-width:100%;box-shadow:none}
+  .report-bg{position:static!important;display:block!important;padding:0!important;background:none!important}
+  .report-hd{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:white}
+  .view{padding:0}
 }
 
 /* ── Mobile ── */
-@media(max-width:680px){
-  .btn-hamburger{display:flex}
-  .topbar{padding:0 0.75rem}
+@media(max-width:640px){
+  .topbar{padding:0 0.75rem;flex-wrap:wrap;height:auto;min-height:54px;padding-top:8px;padding-bottom:8px;gap:8px}
   .topbar-sub{display:none}
-  .page-switcher{display:none}
-  .topbar-right{gap:5px}
-  .btn-sm{padding:3px 7px;font-size:11px}
-  .sidebar{
-    position:fixed;top:0;bottom:0;left:0;
-    width:280px;z-index:160;
-    transform:translateX(-100%);
-    transition:transform 0.25s ease;
-    box-shadow:4px 0 20px rgba(0,0,0,0.15);
-  }
-  .sidebar.open{transform:translateX(0)}
-  .main{padding:1rem}
+  .topbar-nav{order:3;width:100%;justify-content:center;margin-bottom:4px}
+  .nav-btn{flex:1;text-align:center;padding:5px 8px;font-size:11px}
+  .view{padding:1rem}
   .weeks-grid{grid-template-columns:1fr}
+  .shutdown-grid,.tpl-grid{grid-template-columns:1fr}
   .task-row{padding:8px 0;min-height:44px}
   .cb{width:20px;height:20px;border-radius:4px}
   .cb.checked::after{width:10px;height:6px}
   .task-txt{font-size:13px}
-  .project-item{min-height:48px}
-  .modal{width:calc(100vw - 2rem);max-width:360px}
-  .report-modal-bg{padding:1rem 0.5rem}
+  .report-bg{padding:0.5rem}
+  .summary-bar{gap:10px}
 }
 </style>
 </head>
 <body>
 
-<div class="admin-banner" id="admin-banner">⚙ Admin mode active — you can edit tasks, titles and add/remove items. Changes save automatically.</div>
+<div class="admin-banner" id="admin-banner">⚙ Admin mode — edit templates, rename and delete shutdowns.</div>
 
-<!-- Top bar -->
 <div class="topbar">
-  <button class="btn-hamburger" onclick="toggleSidebar()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
   <div class="topbar-brand">
     <div class="topbar-logo">
-      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="10" width="2" height="4" fill="#0b1c33"/>
-        <rect x="5" y="7" width="2" height="7" fill="#0b1c33"/>
-        <rect x="8" y="4" width="2" height="10" fill="#0b1c33"/>
-        <rect x="11" y="2" width="2" height="12" fill="#0b1c33"/>
-      </svg>
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="10" width="2" height="4" fill="#0b1c33"/><rect x="5" y="7" width="2" height="7" fill="#0b1c33"/><rect x="8" y="4" width="2" height="10" fill="#0b1c33"/><rect x="11" y="2" width="2" height="12" fill="#0b1c33"/></svg>
     </div>
     <div>
       <div class="topbar-name">Palm Crest</div>
       <div class="topbar-sub">Scheduling Solutions</div>
     </div>
   </div>
-  <div class="page-switcher">
-    <a class="page-switch-btn active" href="index.html">12-week</a>
-    <a class="page-switch-btn" href="checklist-short.html">Short-form</a>
+  <div class="topbar-nav">
+    <button class="nav-btn active" onclick="showView('home')">Shutdowns</button>
+    <button class="nav-btn admin-tab" id="nav-templates" onclick="showView('templates')" style="display:none">Templates</button>
   </div>
   <div class="topbar-right">
-    <button class="btn btn-ghost btn-sm" onclick="openReport()" id="btn-report" style="display:none">Planning report</button>
-    <button class="btn btn-ghost btn-sm" onclick="confirmClear()" id="btn-clear" style="display:none">Clear checklist</button>
-    <button class="btn btn-admin-off btn-sm" onclick="promptAdmin()" id="btn-admin-on" style="color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.2)">Admin</button>
+    <button class="btn btn-ghost btn-sm" onclick="hardRefresh()" title="Refresh">↺</button>
+    <button class="btn btn-ghost btn-sm" onclick="promptAdmin()" id="btn-admin-on">Admin</button>
     <button class="btn btn-admin btn-sm" onclick="exitAdmin()" id="btn-admin-off" style="display:none">Exit admin</button>
   </div>
 </div>
 
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
-<div class="shell">
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-hd"><h3>Shutdowns</h3></div>
-    <div class="project-list" id="project-list">
-      <div class="empty"><div class="spinner"></div><p>Loading…</p></div>
+<!-- ── HOME VIEW ── -->
+<div class="view active" id="view-home">
+  <div class="home-hd">
+    <h2>Active shutdowns</h2>
+    <button class="btn btn-gold" onclick="showNewShutdown()">+ New shutdown</button>
+  </div>
+  <div id="shutdown-list"><div class="loading-msg"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- ── TEMPLATES VIEW ── -->
+<div class="view" id="view-templates">
+  <div class="tpl-hd">
+    <h2>Templates</h2>
+    <button class="btn btn-admin" onclick="showNewTemplate()">+ New template</button>
+  </div>
+  <div id="template-list"><div class="loading-msg"><div class="spinner"></div>Loading…</div></div>
+</div>
+
+<!-- ── TRACKING VIEW ── -->
+<div class="view" id="view-track">
+  <div class="track-back" onclick="showView('home')">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to shutdowns
+  </div>
+  <div class="track-hd">
+    <div class="track-hd-left">
+      <h2 id="track-title">—</h2>
+      <p id="track-meta">—</p>
     </div>
-    <div class="sidebar-ft">
-      <div style="display:flex;gap:6px;margin-bottom:10px">
-        <a href="index.html" style="flex:1;text-align:center;padding:7px;border-radius:var(--radius);background:var(--gold);color:var(--navy);font-size:12px;font-weight:600;text-decoration:none">12-week</a>
-        <a href="checklist-short.html" style="flex:1;text-align:center;padding:7px;border-radius:var(--radius);background:var(--off);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;text-decoration:none">Short-form</a>
+    <div class="track-hd-right">
+      <button class="btn btn-outline btn-sm" onclick="openReport()">Planning report</button>
+      <button class="btn btn-outline btn-sm" onclick="confirmClear()">Clear</button>
+    </div>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-stat"><div class="val" id="s-done">0</div><div class="lbl">Complete</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="val" id="s-rem">0</div><div class="lbl">Remaining</div></div>
+    <div class="summary-divider"></div>
+    <div class="summary-stat"><div class="val" id="s-pct">0%</div><div class="lbl">Progress</div></div>
+    <div class="progress-track"><div class="progress-fill" id="s-bar" style="width:0%"></div></div>
+  </div>
+  <div id="track-edit-ctrl" style="display:none">
+    <div class="tile-ctrl">
+      <span id="tile-ctrl-label">Tiles: 4 (min 1, max 12)</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="tile-btn" id="tile-minus" onclick="removeTile()">−</button>
+        <span class="tile-count" id="tile-count-lbl">4 weeks</span>
+        <button class="tile-btn" id="tile-plus" onclick="addTile()">+</button>
       </div>
-      <button class="btn btn-gold" style="width:100%" onclick="showNewProject()">+ New shutdown</button>
-    </div>
-  </aside>
-  <main class="main" id="main">
-    <div class="empty" style="margin-top:4rem">
-      <h3>Select a shutdown</h3>
-      <p>Choose a project from the sidebar or create a new one.</p>
-    </div>
-  </main>
-</div>
-
-<!-- New project modal -->
-<div class="modal-bg" id="new-proj-modal">
-  <div class="modal">
-    <h3>New shutdown project</h3>
-    <input type="text" id="new-proj-name" placeholder="e.g. Talison Q3 2026" maxlength="60"
-      onkeydown="if(event.key==='Enter')createProject()">
-    <div class="modal-btns">
-      <button class="btn btn-outline" onclick="closeNewProject()">Cancel</button>
-      <button class="btn btn-gold" onclick="createProject()">Create</button>
     </div>
   </div>
+  <div class="weeks-grid" id="weeks-grid"></div>
 </div>
 
-<!-- Rename project modal -->
-<div class="modal-bg" id="rename-proj-modal">
-  <div class="modal">
-    <h3>Rename shutdown</h3>
-    <input type="text" id="rename-proj-input" maxlength="60"
-      onkeydown="if(event.key==='Enter')confirmRename()">
-    <div class="modal-btns">
-      <button class="btn btn-outline" onclick="closeRenameModal()">Cancel</button>
-      <button class="btn btn-admin" onclick="confirmRename()">Rename</button>
-    </div>
-  </div>
-</div>
+<!-- ── MODALS ── -->
 
-<!-- Admin password modal -->
-<div class="modal-bg" id="admin-modal">
+<!-- Admin password -->
+<div class="modal-bg" id="modal-admin">
   <div class="modal">
     <h3>Admin access</h3>
-    <p class="sub">Enter the admin password to edit tasks and week titles.</p>
-    <div class="modal-err" id="admin-err">Incorrect password. Try again.</div>
-    <input type="password" id="admin-pw-input" class="admin-input" placeholder="Password"
-      onkeydown="if(event.key==='Enter')checkAdminPw()">
+    <p class="sub">Enter the admin password to manage templates and shutdowns.</p>
+    <div class="modal-err" id="admin-err">Incorrect password.</div>
+    <input type="password" id="admin-pw" class="adm" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()">
     <div class="modal-btns">
-      <button class="btn btn-outline" onclick="closeAdminModal()">Cancel</button>
-      <button class="btn btn-admin" onclick="checkAdminPw()">Unlock</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-admin')">Cancel</button>
+      <button class="btn btn-admin" onclick="checkPw()">Unlock</button>
     </div>
   </div>
 </div>
 
-<!-- Report modal -->
-<div class="report-modal-bg" id="report-modal">
+<!-- New shutdown -->
+<div class="modal-bg" id="modal-new-shutdown">
+  <div class="modal">
+    <h3>New shutdown</h3>
+    <label>Shutdown name</label>
+    <input type="text" id="new-shut-name" placeholder="e.g. Talison Q3 2026" maxlength="60"
+      onkeydown="if(event.key==='Enter')document.getElementById('new-shut-tpl').focus()">
+    <label>Template</label>
+    <select id="new-shut-tpl"></select>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-shutdown')">Cancel</button>
+      <button class="btn btn-gold" onclick="createShutdown()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- New template -->
+<div class="modal-bg" id="modal-new-tpl">
+  <div class="modal">
+    <h3>New template</h3>
+    <label>Template name</label>
+    <input type="text" id="new-tpl-name" placeholder="e.g. 6-week minor shut" maxlength="60"
+      onkeydown="if(event.key==='Enter')createTemplate()">
+    <label>Number of weeks</label>
+    <select id="new-tpl-weeks">
+      <option value="1">1 week</option>
+      <option value="2">2 weeks</option>
+      <option value="3">3 weeks</option>
+      <option value="4" selected>4 weeks</option>
+      <option value="5">5 weeks</option>
+      <option value="6">6 weeks</option>
+      <option value="7">7 weeks</option>
+      <option value="8">8 weeks</option>
+      <option value="9">9 weeks</option>
+      <option value="10">10 weeks</option>
+      <option value="11">11 weeks</option>
+      <option value="12">12 weeks</option>
+    </select>
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-tpl')">Cancel</button>
+      <button class="btn btn-admin" onclick="createTemplate()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename shutdown -->
+<div class="modal-bg" id="modal-rename-shut">
+  <div class="modal">
+    <h3>Rename shutdown</h3>
+    <input type="text" id="rename-shut-input" maxlength="60" onkeydown="if(event.key==='Enter')confirmRenameShut()">
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-rename-shut')">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmRenameShut()">Rename</button>
+    </div>
+  </div>
+</div>
+
+<!-- Rename template -->
+<div class="modal-bg" id="modal-rename-tpl">
+  <div class="modal">
+    <h3>Rename template</h3>
+    <input type="text" id="rename-tpl-input" maxlength="60" onkeydown="if(event.key==='Enter')confirmRenameTpl()">
+    <div class="modal-btns">
+      <button class="btn btn-outline" onclick="closeModal('modal-rename-tpl')">Cancel</button>
+      <button class="btn btn-admin" onclick="confirmRenameTpl()">Rename</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report -->
+<div class="report-bg" id="report-bg">
   <div class="report-box" id="report-box"></div>
 </div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────
+// ── CONFIG ──────────────────────────────────────────────────────────────────
 const GAS_URL  = "https://script.google.com/macros/s/AKfycbxwGZd3yrDdHvYSnusre5-dNsbtdeH5qZtiw8928pcsVp6q3bgOzrv79zqYP5sWG-KT/exec";
 const ADMIN_PW = "PalmCrest1";
-// ─────────────────────────────────────────────────────────
+const MIN_W = 1, MAX_W = 12;
+// ────────────────────────────────────────────────────────────────────────────
 
-// Default week definitions (used when no saved template exists)
-const DEFAULT_WEEKS = [
-  { num:1, title:"Project setup", phase:1, tasks:[
-    "Open PalmCrest MS Project template",
-    "Verify template version and ribbon tools",
-    "Create project calendar and shift patterns",
-    "Set up WBS top-level structure",
-    "Create phase/area header tasks",
-    "Confirm shutdown dates and duration with client"
-  ]},
-  { num:2, title:"WBS and FLOC structure", phase:1, tasks:[
-    "Build out full WBS hierarchy",
-    "Verify FLOC levels match SAP equipment hierarchy",
-    "Check WBS level discipline against standard (5-level max)",
-    "Create sub-header placeholders for each work centre",
-    "Align WBS with scope document / SWR list"
-  ]},
-  { num:3, title:"First SAP import", phase:1, tasks:[
-    "Export IW37N data from SAP for all work orders",
-    "Run ImprtSap macro to load work orders",
-    "Move work orders into correct WBS / FLOC positions",
-    "Check for duplicates and unmatched FLOCs",
-    "Flag work orders with missing data (duration, resource)"
-  ]},
-  { num:4, title:"Non-SAP data and logic", phase:1, tasks:[
-    "Add non-SAP tasks (isolations, scaffold, inspections)",
-    "Populate Text fields: Supervisor, Team, Sub-team",
-    "Assign work centres and crew codes",
-    "Create basic logic links (FS dependencies)",
-    "Link isolation and de-isolation milestones",
-    "Re-import SAP and verify changes since week 3"
-  ]},
-  { num:5, title:"Critical path foundation", phase:2, tasks:[
-    "Identify the primary shutdown sequence",
-    "Build critical path through main equipment trains",
-    "Add key milestones (safe to enter, box-up, first fire)",
-    "Link contractor packages into main sequence",
-    "Check schedule is fully logic-driven (no floaters)",
-    "Re-import SAP and reconcile new/changed work orders"
-  ]},
-  { num:6, title:"Scope and resource loading", phase:2, tasks:[
-    "Challenge scope — remove duplicates, out-of-scope WOs",
-    "Identify work for replan (defer to post-shutdown)",
-    "Assign resources to all tasks",
-    "First resource levelling pass",
-    "Check crew loading curves — flatten peaks",
-    "Contractor input: request durations and resource plans"
-  ]},
-  { num:7, title:"Contractor integration", phase:2, tasks:[
-    "Incorporate contractor schedules and durations",
-    "Link contractor scope into main logic network",
-    "Identify contractor-owned CP tasks",
-    "Re-import SAP — verify any scope additions",
-    "Check interface points between disciplines",
-    "Update Supervisor and team assignments for contractors"
-  ]},
-  { num:8, title:"Critical path refinement", phase:3, tasks:[
-    "Identify all CP and CT (critical-to) tasks",
-    "Colour-code / flag CP tasks in schedule",
-    "Identify float thresholds — near-critical tasks",
-    "Second resource levelling pass after CP is set",
-    "Check Executive Summary milestone dates",
-    "Re-import SAP — final scope freeze approaching"
-  ]},
-  { num:9, title:"Schedule optimisation", phase:3, tasks:[
-    "Compress CP where possible (parallel work, shift changes)",
-    "Validate all task durations with supervisors",
-    "Confirm isolations are linked and sequenced correctly",
-    "Check schedule against cost forecast (manhours vs budget)",
-    "Review replan list — confirm defer or include decisions",
-    "Contractor feedback loop — confirm logic and durations"
-  ]},
-  { num:10, title:"Stakeholder review", phase:3, tasks:[
-    "Produce draft schedule for internal review",
-    "Issue to discipline leads for duration / logic check",
-    "Facilitate scope challenge workshop",
-    "Capture mark-ups and update schedule",
-    "Re-import SAP — lock scope",
-    "Confirm Executive Summary is accurate and presentable"
-  ]},
-  { num:11, title:"Pre-issue QA", phase:4, tasks:[
-    "Run Schedule Health Check tool — resolve all flags",
-    "Verify no open ends / dangling tasks",
-    "Check all milestones have predecessors and successors",
-    "Confirm resource histogram is within crew limits",
-    "Final contractor confirmation of durations",
-    "Produce baseline version — save and lock"
-  ]},
-  { num:12, title:"Issue for construction", phase:4, tasks:[
-    "Produce final issue-for-construction schedule",
-    "Export Executive Summary report",
-    "Issue lookahead reports by discipline / crew",
-    "Upload to LiveTrack / client portal",
-    "Conduct pre-shutdown schedule walkthrough with team",
-    "Archive baseline — ready for progress tracking"
-  ]}
+const DEFAULT_12W = [
+  {num:1,title:"Project setup",phase:1,tasks:["Open PalmCrest MS Project template","Verify template version and ribbon tools","Create project calendar and shift patterns","Set up WBS top-level structure","Create phase/area header tasks","Confirm shutdown dates and duration with client"]},
+  {num:2,title:"WBS and FLOC structure",phase:1,tasks:["Build out full WBS hierarchy","Verify FLOC levels match SAP equipment hierarchy","Check WBS level discipline against standard (5-level max)","Create sub-header placeholders for each work centre","Align WBS with scope document / SWR list"]},
+  {num:3,title:"First SAP import",phase:1,tasks:["Export IW37N data from SAP for all work orders","Run ImprtSap macro to load work orders","Move work orders into correct WBS / FLOC positions","Check for duplicates and unmatched FLOCs","Flag work orders with missing data (duration, resource)"]},
+  {num:4,title:"Non-SAP data and logic",phase:1,tasks:["Add non-SAP tasks (isolations, scaffold, inspections)","Populate Text fields: Supervisor, Team, Sub-team","Assign work centres and crew codes","Create basic logic links (FS dependencies)","Link isolation and de-isolation milestones","Re-import SAP and verify changes since week 3"]},
+  {num:5,title:"Critical path foundation",phase:2,tasks:["Identify the primary shutdown sequence","Build critical path through main equipment trains","Add key milestones (safe to enter, box-up, first fire)","Link contractor packages into main sequence","Check schedule is fully logic-driven (no floaters)","Re-import SAP and reconcile new/changed work orders"]},
+  {num:6,title:"Scope and resource loading",phase:2,tasks:["Challenge scope — remove duplicates, out-of-scope WOs","Identify work for replan (defer to post-shutdown)","Assign resources to all tasks","First resource levelling pass","Check crew loading curves — flatten peaks","Contractor input: request durations and resource plans"]},
+  {num:7,title:"Contractor integration",phase:2,tasks:["Incorporate contractor schedules and durations","Link contractor scope into main logic network","Identify contractor-owned CP tasks","Re-import SAP — verify any scope additions","Check interface points between disciplines","Update Supervisor and team assignments for contractors"]},
+  {num:8,title:"Critical path refinement",phase:3,tasks:["Identify all CP and CT (critical-to) tasks","Colour-code / flag CP tasks in schedule","Identify float thresholds — near-critical tasks","Second resource levelling pass after CP is set","Check Executive Summary milestone dates","Re-import SAP — final scope freeze approaching"]},
+  {num:9,title:"Schedule optimisation",phase:3,tasks:["Compress CP where possible (parallel work, shift changes)","Validate all task durations with supervisors","Confirm isolations are linked and sequenced correctly","Check schedule against cost forecast (manhours vs budget)","Review replan list — confirm defer or include decisions","Contractor feedback loop — confirm logic and durations"]},
+  {num:10,title:"Stakeholder review",phase:3,tasks:["Produce draft schedule for internal review","Issue to discipline leads for duration / logic check","Facilitate scope challenge workshop","Capture mark-ups and update schedule","Re-import SAP — lock scope","Confirm Executive Summary is accurate and presentable"]},
+  {num:11,title:"Pre-issue QA",phase:4,tasks:["Run Schedule Health Check tool — resolve all flags","Verify no open ends / dangling tasks","Check all milestones have predecessors and successors","Confirm resource histogram is within crew limits","Final contractor confirmation of durations","Produce baseline version — save and lock"]},
+  {num:12,title:"Issue for construction",phase:4,tasks:["Produce final issue-for-construction schedule","Export Executive Summary report","Issue lookahead reports by discipline / crew","Upload to LiveTrack / client portal","Conduct pre-shutdown schedule walkthrough with team","Archive baseline — ready for progress tracking"]}
 ];
 
-const PHASE_LABELS = { 1:"Foundation", 2:"Build", 3:"Optimise", 4:"Finalise" };
-const PHASE_COLORS = { 1:"#1e6b3c", 2:"#8a4500", 3:"#1a3a6e", 4:"#9b2020" };
+// ── State ────────────────────────────────────────────────────────────────────
+let adminMode    = false;
+let shutdowns    = []; // [{id,name,templateId,createdAt}]
+let templates    = []; // [{id,name,weeks:[{num,title,phase,tasks[]}]}]
+let activeShut   = null;
+let activeWeeks  = []; // current shutdown's week structure
+let taskState    = {}; // "wk-idx" -> {checked,timestamp}
+let saveTimer    = null;
+let renamingShutId = null;
+let renamingTplId  = null;
+let editingTplId   = null; // template being edited in track view
 
-// Deep-clone defaults so admin edits don't mutate originals
-let WEEKS = JSON.parse(JSON.stringify(DEFAULT_WEEKS));
-
-let projects    = [];
-let activeProject = null;
-let taskState   = {};
-let adminMode   = false;
-let saveTimer   = null;
-
-// ── API ────────────────────────────────────────────────────
-
+// ── API ──────────────────────────────────────────────────────────────────────
 async function api(params) {
-  const url = GAS_URL + "?" + new URLSearchParams(params);
   try {
-    const r = await fetch(url, { redirect:"follow" });
-    const text = await r.text();
-    return JSON.parse(text);
-  } catch(e) {
-    console.error("API error:", e);
-    return { error: e.message };
-  }
+    const url = GAS_URL + "?" + new URLSearchParams(params);
+    const r   = await fetch(url, {redirect:"follow"});
+    const txt = await r.text();
+    return JSON.parse(txt);
+  } catch(e) { return {error:e.message}; }
 }
 
-async function apiPost(body) {
-  const params = {};
-  Object.entries(body).forEach(([k,v]) => { params[k] = String(v); });
-  if (body.action === "createProject") {
-    params.name = encodeURIComponent(params.project);
-    delete params.project;
-  }
-  return api(params);
-}
-
-// ── Init ───────────────────────────────────────────────────
-
+// ── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
-  // Load saved template from localStorage (admin edits apply globally)
-  const saved = localStorage.getItem("pc_template");
-  if (saved) {
-    try { WEEKS = JSON.parse(saved); } catch(e) {}
+  const [sd, td] = await Promise.all([
+    api({action:"listProjects"}),
+    api({action:"listTemplates"})
+  ]);
+  shutdowns = sd.projects || [];
+  templates = td.templates || [];
+
+  // Seed 12-week template if none exist
+  if (!templates.length) {
+    const r = await api({action:"saveTemplate", tplId:"tpl_12w_default", name:encodeURIComponent("12-week standard"), data:encodeURIComponent(JSON.stringify(DEFAULT_12W))});
+    if (r.ok) templates = [{id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W}];
   }
-  const data = await api({ action:"listProjects" });
-  projects = data.projects || [];
-  renderSidebar();
+  renderHome();
+  renderTemplates();
 }
 
-// ── Admin ──────────────────────────────────────────────────
+// ── View routing ─────────────────────────────────────────────────────────────
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`view-${v}`).classList.add('active');
+  if (v==='home') document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  if (v==='templates') document.getElementById('nav-templates').classList.add('active');
+}
 
+// ── Admin ────────────────────────────────────────────────────────────────────
 function promptAdmin() {
-  document.getElementById("admin-pw-input").value = "";
-  document.getElementById("admin-err").classList.remove("show");
-  document.getElementById("admin-modal").classList.add("open");
-  setTimeout(()=>document.getElementById("admin-pw-input").focus(), 80);
+  document.getElementById('admin-pw').value='';
+  document.getElementById('admin-err').classList.remove('show');
+  openModal('modal-admin');
+  setTimeout(()=>document.getElementById('admin-pw').focus(),80);
 }
-
-function closeAdminModal() {
-  document.getElementById("admin-modal").classList.remove("open");
-}
-
-function checkAdminPw() {
-  const val = document.getElementById("admin-pw-input").value;
-  if (val === ADMIN_PW) {
-    closeAdminModal();
-    enterAdmin();
+function checkPw() {
+  if (document.getElementById('admin-pw').value === ADMIN_PW) {
+    closeModal('modal-admin'); enterAdmin();
   } else {
-    document.getElementById("admin-err").classList.add("show");
-    document.getElementById("admin-pw-input").value = "";
-    document.getElementById("admin-pw-input").focus();
+    document.getElementById('admin-err').classList.add('show');
+    document.getElementById('admin-pw').value='';
   }
 }
-
 function enterAdmin() {
-  adminMode = true;
-  document.getElementById("admin-banner").classList.add("on");
-  document.getElementById("btn-admin-on").style.display  = "none";
-  document.getElementById("btn-admin-off").style.display = "";
-  renderSidebar();
-  if (activeProject) renderMain(false);
+  adminMode=true;
+  document.getElementById('admin-banner').classList.add('on');
+  document.getElementById('btn-admin-on').style.display='none';
+  document.getElementById('btn-admin-off').style.display='';
+  document.getElementById('nav-templates').style.display='';
+  document.getElementById('shutdown-list').classList.add('admin-active');
+  if (activeShut) {
+    document.getElementById('track-edit-ctrl').style.display='';
+    renderWeekGrid();
+  }
+  renderHome();
 }
-
 function exitAdmin() {
-  adminMode = false;
-  document.getElementById("admin-banner").classList.remove("on");
-  document.getElementById("btn-admin-on").style.display  = "";
-  document.getElementById("btn-admin-off").style.display = "none";
-  renderSidebar();
-  if (activeProject) renderMain(false);
-}
-
-// ── Save template ──────────────────────────────────────────
-// Admin edits to WEEKS are saved to localStorage and also
-// persisted via GAS so other devices get them on next load.
-
-function persistTemplate() {
-  localStorage.setItem("pc_template", JSON.stringify(WEEKS));
-  // Also save to GAS as a special "_template" project-like record
-  api({ action:"saveTemplate", data: encodeURIComponent(JSON.stringify(WEEKS)) });
-}
-
-function flashSave(wk) {
-  const el = document.getElementById(`save-ind-${wk}`);
-  if (!el) return;
-  el.classList.add("show");
-  setTimeout(()=>el.classList.remove("show"), 1800);
-}
-
-// ── Admin edit handlers ────────────────────────────────────
-
-function onTitleChange(wk, val) {
-  const w = WEEKS.find(x=>x.num===wk);
-  if (w) w.title = val;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{ persistTemplate(); flashSave(wk); }, 800);
-}
-
-function onTaskChange(wk, idx, val) {
-  const w = WEEKS.find(x=>x.num===wk);
-  if (w) w.tasks[idx] = val;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{ persistTemplate(); flashSave(wk); }, 800);
-}
-
-function deleteTask(wk, idx) {
-  const w = WEEKS.find(x=>x.num===wk);
-  if (!w || w.tasks.length <= 1) return;
-  w.tasks.splice(idx, 1);
-  persistTemplate();
-  // Re-render just this card
-  const card = document.getElementById(`wcard-${wk}`);
-  if (card) card.outerHTML = renderWeekCard(w);
-}
-
-function addTask(wk) {
-  const inp = document.getElementById(`add-inp-${wk}`);
-  if (!inp) return;
-  const val = inp.value.trim();
-  if (!val) return;
-  const w = WEEKS.find(x=>x.num===wk);
-  if (w) {
-    w.tasks.push(val);
-    persistTemplate();
-    inp.value = "";
-    const card = document.getElementById(`wcard-${wk}`);
-    if (card) card.outerHTML = renderWeekCard(w);
+  adminMode=false;
+  document.getElementById('admin-banner').classList.remove('on');
+  document.getElementById('btn-admin-on').style.display='';
+  document.getElementById('btn-admin-off').style.display='none';
+  document.getElementById('nav-templates').style.display='none';
+  document.getElementById('shutdown-list').classList.remove('admin-active');
+  if (activeShut) {
+    document.getElementById('track-edit-ctrl').style.display='none';
+    renderWeekGrid();
   }
+  renderHome();
+  showView('home');
 }
 
-// ── Sidebar ────────────────────────────────────────────────
+// ── Modal helpers ─────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function renderSidebar() {
-  const el = document.getElementById("project-list");
-  // Toggle admin class on project-list for CSS to show/hide action buttons
-  el.className = adminMode ? "project-list admin-mode-sidebar" : "project-list";
-  if (!projects.length) {
-    el.innerHTML = `<div class="empty"><p>No shutdowns yet.<br>Create one below.</p></div>`;
+// ── Home view ─────────────────────────────────────────────────────────────────
+function renderHome() {
+  const el = document.getElementById('shutdown-list');
+  if (!shutdowns.length) {
+    el.innerHTML=`<div class="empty-home"><h3>No shutdowns yet</h3><p>Create your first shutdown to get started.</p><button class="btn btn-gold" onclick="showNewShutdown()">+ New shutdown</button></div>`;
     return;
   }
-  el.innerHTML = projects.map(p => {
-    const pct    = activeProject?.id === p.id ? calcPct() : "–";
-    const active = activeProject?.id === p.id ? "active" : "";
-    const safeId = p.id.replace(/'/g,"\\'");
-    const clickName = adminMode ? "" : `onclick="selectProject('${safeId}')"`;
-    return `<div class="project-item ${active}">
-      <span class="proj-name" onclick="selectProject('${safeId}')" style="cursor:pointer">${esc(p.name)}</span>
-      <span class="proj-pct">${pct}%</span>
-      <div class="proj-actions">
-        <button class="proj-act-btn rename" onclick="showRename('${safeId}')" title="Rename">✏</button>
-        <button class="proj-act-btn del"    onclick="deleteProject('${safeId}')" title="Delete">🗑</button>
+  el.className = adminMode ? 'shutdown-grid admin-active' : 'shutdown-grid';
+  el.innerHTML = shutdowns.map(s => {
+    const pct = s._pct !== undefined ? s._pct : '–';
+    const tpl = templates.find(t=>t.id===s.templateId);
+    const meta = tpl ? `Template: ${esc(tpl.name)}` : 'No template';
+    return `<div class="shutdown-card" onclick="openShutdown('${s.id}')">
+      <div class="shutdown-card-actions">
+        <button class="card-act-btn rename" onclick="event.stopPropagation();showRenameShut('${s.id}')" title="Rename">✏</button>
+        <button class="card-act-btn del" onclick="event.stopPropagation();deleteShutdown('${s.id}')" title="Delete">🗑</button>
       </div>
+      <div class="shutdown-card-name">${esc(s.name)}</div>
+      <div class="shutdown-card-meta">${meta}</div>
+      <div class="shutdown-card-bar"><div class="shutdown-card-fill" style="width:${typeof pct==='number'?pct:0}%"></div></div>
+      <div class="shutdown-card-pct">${typeof pct==='number'?pct+'% complete':'Not started'}</div>
     </div>`;
-  }).join("");
+  }).join('');
 }
 
-function calcPct() {
-  const total = WEEKS.reduce((a,w)=>a+w.tasks.length,0);
-  const done  = Object.values(taskState).filter(v=>v.checked).length;
-  return Math.round(done/total*100);
-}
-
-// ── Select project ─────────────────────────────────────────
-
-async function selectProject(id) {
-  const p = projects.find(x=>x.id===id);
-  if (!p) return;
-  closeSidebar();
-  activeProject = p;
-  taskState = {};
-  renderMain(true);
-  const data = await api({ action:"getState", project:id });
-  if (data.state) taskState = data.state;
-  renderMain(false);
-  renderSidebar();
-  document.getElementById("btn-report").style.display = "";
-  document.getElementById("btn-clear").style.display  = "";
-}
-
-// ── Main render ────────────────────────────────────────────
-
-function renderMain(loading) {
-  const el = document.getElementById("main");
-  if (!activeProject) return;
-  if (loading) {
-    el.innerHTML = `<div class="empty" style="margin-top:4rem"><div class="spinner"></div><p>Loading…</p></div>`;
+// ── Templates view ────────────────────────────────────────────────────────────
+function renderTemplates() {
+  const el = document.getElementById('template-list');
+  if (!templates.length) {
+    el.innerHTML=`<div class="empty-home"><h3>No templates</h3><p>Create a template to use when starting new shutdowns.</p></div>`;
     return;
   }
-  const total = WEEKS.reduce((a,w)=>a+w.tasks.length,0);
-  const done  = Object.values(taskState).filter(v=>v.checked).length;
-  const pct   = Math.round(done/total*100);
-
-  el.innerHTML = `
-    <div class="page-hd">
-      <div class="page-hd-left">
-        <h2>${esc(activeProject.name)}</h2>
-        <p>12-week shutdown planning checklist${adminMode?' &nbsp;<span style="color:var(--admin);font-weight:600">— Admin mode</span>':''}</p>
+  el.className='tpl-grid';
+  el.innerHTML = templates.map(t => {
+    const preview = t.weeks.slice(0,5).map(w=>`
+      <div class="tpl-week-row">
+        <span class="tpl-week-title">${esc(w.title)}</span>
+        <span class="tpl-week-count">${w.tasks.length} task${w.tasks.length!==1?'s':''}</span>
+      </div>`).join('') + (t.weeks.length>5?`<div class="tpl-week-row" style="color:var(--muted);font-style:italic">…and ${t.weeks.length-5} more weeks</div>`:'');
+    return `<div class="tpl-card">
+      <div class="tpl-card-hd">
+        <div>
+          <div class="tpl-card-name">${esc(t.name)}</div>
+          <div class="tpl-card-meta">${t.weeks.length} week${t.weeks.length!==1?'s':''}</div>
+        </div>
+        <div class="tpl-card-actions">
+          <button class="btn btn-xs btn-outline" onclick="editTemplate('${t.id}')">Edit</button>
+          <button class="btn btn-xs btn-outline" onclick="showRenameTpl('${t.id}')">Rename</button>
+          <button class="btn btn-xs btn-danger" onclick="deleteTemplate('${t.id}')">Delete</button>
+        </div>
       </div>
-    </div>
-    <div class="summary-bar">
-      <div class="summary-stat"><div class="val">${done}</div><div class="lbl">Complete</div></div>
-      <div class="summary-divider"></div>
-      <div class="summary-stat"><div class="val">${total-done}</div><div class="lbl">Remaining</div></div>
-      <div class="summary-divider"></div>
-      <div class="summary-stat"><div class="val">${pct}%</div><div class="lbl">Progress</div></div>
-      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-    </div>
-    <div class="phase-legend">
-      ${[1,2,3,4].map(ph=>`
-        <div class="ph-badge">
-          <div class="ph-dot" style="background:${PHASE_COLORS[ph]}"></div>
-          W${ph===1?'1–4':ph===2?'5–7':ph===3?'8–10':'11–12'} ${PHASE_LABELS[ph]}
-        </div>`).join("")}
-    </div>
-    <div class="weeks-grid">
-      ${WEEKS.map(w => renderWeekCard(w)).join("")}
+      <div class="tpl-weeks">${preview}</div>
     </div>`;
+  }).join('');
+}
+
+// ── New shutdown ──────────────────────────────────────────────────────────────
+function showNewShutdown() {
+  const sel = document.getElementById('new-shut-tpl');
+  sel.innerHTML = templates.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
+  document.getElementById('new-shut-name').value='';
+  openModal('modal-new-shutdown');
+  setTimeout(()=>document.getElementById('new-shut-name').focus(),80);
+}
+async function createShutdown() {
+  const name  = document.getElementById('new-shut-name').value.trim();
+  const tplId = document.getElementById('new-shut-tpl').value;
+  if (!name) return;
+  closeModal('modal-new-shutdown');
+  const r = await api({action:"createProject", name:encodeURIComponent(name), templateId:tplId});
+  if (r.ok) {
+    shutdowns.push({id:r.id, name:r.name, templateId:tplId, createdAt:new Date().toISOString()});
+    renderHome();
+    await openShutdown(r.id);
+  }
+}
+
+// ── Open shutdown ─────────────────────────────────────────────────────────────
+async function openShutdown(id) {
+  const s = shutdowns.find(x=>x.id===id);
+  if (!s) return;
+  activeShut = s;
+  taskState  = {};
+  activeWeeks = [];
+  showView('track');
+  document.getElementById('track-title').textContent = s.name;
+  document.getElementById('track-meta').textContent  = 'Loading…';
+  document.getElementById('weeks-grid').innerHTML    = '<div class="loading-msg"><div class="spinner"></div>Loading…</div>';
+
+  // Load state + per-shutdown week structure
+  const [stateData, weeksData] = await Promise.all([
+    api({action:"getState",    project:id}),
+    api({action:"getShutdownWeeks", project:id})
+  ]);
+
+  // Resolve week structure: saved > template > blank
+  if (weeksData.weeks) {
+    try { activeWeeks = JSON.parse(weeksData.weeks); } catch(e){}
+  }
+  if (!activeWeeks.length) {
+    const tpl = templates.find(t=>t.id===s.templateId);
+    activeWeeks = tpl ? JSON.parse(JSON.stringify(tpl.weeks)) : [{num:1,title:"Week 1",phase:0,tasks:[]}];
+  }
+  if (stateData.state) taskState = stateData.state;
+
+  const tpl = templates.find(t=>t.id===s.templateId);
+  document.getElementById('track-meta').textContent = tpl ? `Template: ${tpl.name}` : 'Custom';
+  document.getElementById('track-edit-ctrl').style.display = adminMode ? '' : 'none';
+  updateSummary();
+  renderWeekGrid();
+}
+
+// ── Week grid ─────────────────────────────────────────────────────────────────
+function renderWeekGrid() {
+  document.getElementById('weeks-grid').innerHTML = activeWeeks.map(w=>renderWeekCard(w)).join('');
+  updateTileCtrl();
 }
 
 function renderWeekCard(w) {
-  const done  = w.tasks.filter((_,i) => taskState[`${w.num}-${i}`]?.checked).length;
-  const isDone = done === w.tasks.length && w.tasks.length > 0;
-  const adminClass = adminMode ? "admin-mode" : "";
+  const done   = w.tasks.filter((_,i)=>taskState[`${w.num}-${i}`]?.checked).length;
+  const isDone = w.tasks.length>0 && done===w.tasks.length;
+  const ph     = w.phase||0;
 
   const titleEl = adminMode
-    ? `<input class="week-title-input" value="${esc(w.title)}"
-         onchange="onTitleChange(${w.num},this.value)"
-         oninput="onTitleChange(${w.num},this.value)">`
-    : `<span class="week-title-txt">${esc(w.title)}</span>`;
+    ? `<input class="week-title-input" value="${esc(w.title)}" oninput="onTitleChange(${w.num},this.value)">`
+    : `<span class="week-title">${esc(w.title)}</span>`;
 
-  const tasksEl = adminMode
-    ? w.tasks.map((t,i) => `
-        <div class="task-edit-row">
-          <input class="task-edit-input" value="${esc(t)}"
-            onchange="onTaskChange(${w.num},${i},this.value)"
-            oninput="onTaskChange(${w.num},${i},this.value)">
-          <button class="task-del-btn" onclick="deleteTask(${w.num},${i})" title="Remove task">×</button>
-        </div>`).join("")
-      + `<div class="task-add-row">
-           <input class="task-add-input" id="add-inp-${w.num}" placeholder="Add task…"
-             onkeydown="if(event.key==='Enter')addTask(${w.num})">
-           <button class="task-add-btn" onclick="addTask(${w.num})">+ Add</button>
-         </div>`
-    : w.tasks.map((t,i) => {
-        const s = taskState[`${w.num}-${i}`] || {};
-        const chk = s.checked ? "checked" : "";
-        const txtClass = s.checked ? "done-txt" : "";
-        const ts = s.checked && s.timestamp
-          ? `<span class="task-ts">${formatTs(s.timestamp)}</span>` : "";
-        return `<div class="task-row" onclick="toggleTask(${w.num},${i})">
-          <div class="cb ${chk}"></div>
-          <div class="task-txt ${txtClass}">${esc(t)}${ts}</div>
-        </div>`;
-      }).join("");
+  const saveEl = adminMode ? `<span class="save-ind" id="sind-${w.num}">saved ✓</span>` : '';
 
-  const saveInd = adminMode
-    ? `<span class="save-indicator" id="save-ind-${w.num}">saved ✓</span>` : "";
+  let body;
+  if (adminMode) {
+    body = w.tasks.map((t,i)=>`
+      <div class="task-edit-row">
+        <input class="task-edit-input" value="${esc(t)}" oninput="onTaskChange(${w.num},${i},this.value)">
+        <button class="task-del-btn" onclick="deleteTask(${w.num},${i})">×</button>
+      </div>`).join('')
+    + `<div class="task-add-row">
+        <input class="task-add-input" id="tadd-${w.num}" placeholder="Add task…" onkeydown="if(event.key==='Enter')addTask(${w.num})">
+        <button class="task-add-btn" onclick="addTask(${w.num})">+ Add</button>
+       </div>`;
+  } else if (!w.tasks.length) {
+    body = `<div class="empty-tile">No tasks — enter admin mode to add some.</div>`;
+  } else {
+    body = w.tasks.map((t,i)=>{
+      const s   = taskState[`${w.num}-${i}`]||{};
+      const ts  = s.checked&&s.timestamp?`<span class="task-ts">${formatTs(s.timestamp)}</span>`:'';
+      return `<div class="task-row" onclick="toggleTask(${w.num},${i})">
+        <div class="cb ${s.checked?'checked':''}"></div>
+        <div class="task-txt ${s.checked?'done':''}">${esc(t)}${ts}</div>
+      </div>`;
+    }).join('');
+  }
 
-  return `<div class="week-card ph-${w.phase} ${isDone?'done':''} ${adminClass}" id="wcard-${w.num}">
+  return `<div class="week-card ph-${ph} ${isDone?'done':''} ${adminMode?'edit-mode':''}" id="wcard-${w.num}">
     <div class="week-hd">
-      <span class="week-num-badge">Week ${w.num}</span>
-      ${titleEl}
-      ${saveInd}
-      <span class="week-pct" id="wpct-${w.num}">${done}/${w.tasks.length}</span>
+      <span class="week-badge">Week ${w.num}</span>
+      ${titleEl}${saveEl}
+      <span class="week-pct" id="wpct-${w.num}">${w.tasks.length?`${done}/${w.tasks.length}`:'–'}</span>
     </div>
-    <div class="week-body">${tasksEl}</div>
+    <div class="week-body">${body}</div>
   </div>`;
 }
 
-// ── Toggle task ────────────────────────────────────────────
-
-async function toggleTask(wk, idx) {
-  if (adminMode) return; // no toggling while editing
-  const key = `${wk}-${idx}`;
-  const cur = taskState[key] || {};
-  const nowChecked = !cur.checked;
-  const ts = nowChecked ? new Date().toISOString() : "";
-  taskState[key] = { checked: nowChecked, timestamp: ts };
-
-  const row = document.querySelector(`#wcard-${wk} .task-row:nth-child(${idx+1})`);
-  if (row) {
-    const cb  = row.querySelector(".cb");
-    const txt = row.querySelector(".task-txt");
-    cb.className  = "cb" + (nowChecked ? " checked" : "");
-    txt.className = "task-txt" + (nowChecked ? " done-txt" : "");
-    const existing = txt.querySelector(".task-ts");
-    if (existing) existing.remove();
-    if (nowChecked && ts) {
-      const sp = document.createElement("span");
-      sp.className = "task-ts";
-      sp.textContent = formatTs(ts);
-      txt.appendChild(sp);
-    }
-  }
-  updateWeekProgress(wk);
-  updateSummary();
-  await apiPost({ action:"setState", project:activeProject.id, key, checked:nowChecked, timestamp:ts });
+// ── Tile controls ─────────────────────────────────────────────────────────────
+function updateTileCtrl() {
+  const n = activeWeeks.length;
+  document.getElementById('tile-ctrl-label').textContent=`Tiles: ${n} (min ${MIN_W}, max ${MAX_W})`;
+  document.getElementById('tile-count-lbl').textContent=`${n} week${n!==1?'s':''}`;
+  document.getElementById('tile-minus').disabled = n<=MIN_W;
+  document.getElementById('tile-plus').disabled  = n>=MAX_W;
+}
+function addTile() {
+  if (activeWeeks.length>=MAX_W) return;
+  activeWeeks.push({num:activeWeeks.length+1,title:`Week ${activeWeeks.length+1}`,phase:0,tasks:[]});
+  persistWeeks(); renderWeekGrid();
+}
+function removeTile() {
+  if (activeWeeks.length<=MIN_W) return;
+  const last = activeWeeks[activeWeeks.length-1];
+  if (last.tasks.length && !confirm(`Remove Week ${last.num}? It has tasks. They will be lost.`)) return;
+  activeWeeks.pop();
+  persistWeeks(); renderWeekGrid();
 }
 
-function updateWeekProgress(wk) {
-  const w = WEEKS.find(x=>x.num===wk);
-  const done = w.tasks.filter((_,i) => taskState[`${wk}-${i}`]?.checked).length;
-  const el = document.getElementById(`wpct-${wk}`);
-  if (el) el.textContent = `${done}/${w.tasks.length}`;
-  const card = document.getElementById(`wcard-${wk}`);
-  if (card) { done===w.tasks.length ? card.classList.add("done") : card.classList.remove("done"); }
+// ── Admin edit handlers ───────────────────────────────────────────────────────
+function onTitleChange(wk,val) {
+  const w=activeWeeks.find(x=>x.num===wk); if(w) w.title=val;
+  scheduleSave(wk);
+}
+function onTaskChange(wk,idx,val) {
+  const w=activeWeeks.find(x=>x.num===wk); if(w) w.tasks[idx]=val;
+  scheduleSave(wk);
+}
+function deleteTask(wk,idx) {
+  const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
+  w.tasks.splice(idx,1);
+  persistWeeks();
+  const card=document.getElementById(`wcard-${wk}`);
+  if(card) card.outerHTML=renderWeekCard(w);
+}
+function addTask(wk) {
+  const inp=document.getElementById(`tadd-${wk}`); if(!inp) return;
+  const val=inp.value.trim(); if(!val) return;
+  const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
+  w.tasks.push(val); inp.value='';
+  persistWeeks();
+  const card=document.getElementById(`wcard-${wk}`);
+  if(card) card.outerHTML=renderWeekCard(w);
+}
+function scheduleSave(wk) {
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    persistWeeks();
+    const ind=document.getElementById(`sind-${wk}`);
+    if(ind){ind.classList.add('show');setTimeout(()=>ind.classList.remove('show'),1800);}
+  },700);
+}
+function persistWeeks() {
+  if (!activeShut) return;
+  api({action:"saveShutdownWeeks", project:activeShut.id, data:encodeURIComponent(JSON.stringify(activeWeeks))});
+}
+
+// ── Toggle task ───────────────────────────────────────────────────────────────
+async function toggleTask(wk,idx) {
+  if (adminMode) return;
+  const key=`${wk}-${idx}`;
+  const cur=taskState[key]||{};
+  const now=!cur.checked;
+  const ts =now?new Date().toISOString():'';
+  taskState[key]={checked:now,timestamp:ts};
+
+  const row=document.querySelector(`#wcard-${wk} .task-row:nth-child(${idx+1})`);
+  if(row){
+    row.querySelector('.cb').className='cb'+(now?' checked':'');
+    const txt=row.querySelector('.task-txt');
+    txt.className='task-txt'+(now?' done':'');
+    const ex=txt.querySelector('.task-ts'); if(ex) ex.remove();
+    if(now&&ts){const sp=document.createElement('span');sp.className='task-ts';sp.textContent=formatTs(ts);txt.appendChild(sp);}
+  }
+  const w=activeWeeks.find(x=>x.num===wk);
+  const done=w.tasks.filter((_,i)=>taskState[`${wk}-${i}`]?.checked).length;
+  const pEl=document.getElementById(`wpct-${wk}`);
+  if(pEl) pEl.textContent=`${done}/${w.tasks.length}`;
+  const card=document.getElementById(`wcard-${wk}`);
+  if(card){done===w.tasks.length?card.classList.add('done'):card.classList.remove('done');}
+  updateSummary();
+  await api({action:"setState",project:activeShut.id,key,checked:now,timestamp:ts});
 }
 
 function updateSummary() {
-  const total = WEEKS.reduce((a,w)=>a+w.tasks.length,0);
-  const done  = Object.values(taskState).filter(v=>v.checked).length;
-  const pct   = Math.round(done/total*100);
-  const bar   = document.querySelector(".progress-fill");
-  if (bar) bar.style.width = pct+"%";
-  const stats = document.querySelectorAll(".summary-stat .val");
-  if (stats[0]) stats[0].textContent = done;
-  if (stats[1]) stats[1].textContent = total-done;
-  if (stats[2]) stats[2].textContent = pct+"%";
-  renderSidebar();
+  const total=activeWeeks.reduce((a,w)=>a+w.tasks.length,0);
+  const done =Object.values(taskState).filter(v=>v.checked).length;
+  const pct  =total?Math.round(done/total*100):0;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-rem').textContent =total-done;
+  document.getElementById('s-pct').textContent =total?pct+'%':'–';
+  document.getElementById('s-bar').style.width =pct+'%';
+  // Update card on home
+  const s=shutdowns.find(x=>x.id===activeShut?.id);
+  if(s) s._pct=pct;
 }
 
-// ── Clear ──────────────────────────────────────────────────
-
+// ── Clear ─────────────────────────────────────────────────────────────────────
 function confirmClear() {
-  if (!activeProject) return;
-  if (!confirm(`Clear all checked tasks for "${activeProject.name}"?\n\nThis cannot be undone.`)) return;
-  taskState = {};
-  renderMain(false);
-  apiPost({ action:"clearProject", project:activeProject.id });
+  if (!activeShut) return;
+  if (!confirm(`Clear all checked tasks for "${activeShut.name}"?\n\nThis cannot be undone.`)) return;
+  taskState={};
+  updateSummary();
+  renderWeekGrid();
+  api({action:"clearProject",project:activeShut.id});
 }
 
-// ── Report ─────────────────────────────────────────────────
-
+// ── Report ────────────────────────────────────────────────────────────────────
 function openReport() {
-  if (!activeProject) return;
-  const total = WEEKS.reduce((a,w)=>a+w.tasks.length,0);
-  const done  = Object.values(taskState).filter(v=>v.checked).length;
-  const pct   = Math.round(done/total*100);
-  const now   = new Date().toLocaleDateString("en-AU",{day:"2-digit",month:"short",year:"numeric"});
-
-  const incomplete = [];
-  WEEKS.forEach(w => {
-    w.tasks.forEach((t,i) => {
-      if (!taskState[`${w.num}-${i}`]?.checked)
-        incomplete.push({ week:`W${w.num}`, task:t });
-    });
-  });
-
-  document.getElementById("report-box").innerHTML = `
-    <div class="report-header">
-      <div>
-        <h2>${esc(activeProject.name)}</h2>
-        <p>Planning report &mdash; generated ${now}</p>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="closeReport()">✕ Close</button>
+  if (!activeShut) return;
+  const total=activeWeeks.reduce((a,w)=>a+w.tasks.length,0);
+  const done =Object.values(taskState).filter(v=>v.checked).length;
+  const pct  =total?Math.round(done/total*100):0;
+  const now  =new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'});
+  const incomplete=[];
+  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{
+    if(!taskState[`${w.num}-${i}`]?.checked) incomplete.push({wk:`W${w.num}`,task:t});
+  }));
+  const tsRows=[];
+  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{
+    const s=taskState[`${w.num}-${i}`];
+    if(s?.checked&&s.timestamp) tsRows.push(`<div class="inc-item"><span class="inc-wk">W${w.num}</span><span style="flex:1">${esc(t)}</span><span style="font-size:10px;color:var(--muted);white-space:nowrap;margin-left:8px">${formatTs(s.timestamp)}</span></div>`);
+  }));
+  document.getElementById('report-box').innerHTML=`
+    <div class="report-hd">
+      <div><h2>${esc(activeShut.name)}</h2><p>Planning report — ${now}</p></div>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('report-bg').classList.remove('open')">✕</button>
     </div>
     <div class="report-body">
-      <div class="report-section">
-        <h3>Overall progress</h3>
+      <div class="report-section"><h3>Overall progress</h3>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-          <div class="progress-track" style="height:10px"><div class="report-fill" style="width:${pct}%"></div></div>
+          <div class="progress-track" style="height:10px"><div class="rw-fill" style="width:${pct}%;height:100%;background:var(--gold-dk);border-radius:3px"></div></div>
           <strong style="font-size:15px;color:var(--navy)">${pct}%</strong>
         </div>
-        <p style="font-size:12px;color:var(--muted)">${done} of ${total} tasks complete &nbsp;|&nbsp; ${total-done} remaining</p>
+        <p style="font-size:12px;color:var(--muted)">${done} of ${total} tasks complete · ${total-done} remaining</p>
       </div>
-      <div class="report-section">
-        <h3>Completion by week</h3>
-        ${WEEKS.map(w=>{
-          const wd = w.tasks.filter((_,i)=>taskState[`${w.num}-${i}`]?.checked).length;
-          const wp = Math.round(wd/w.tasks.length*100);
-          return `<div class="report-week-row">
-            <div class="report-week-label">W${w.num} — ${esc(w.title)}</div>
-            <div class="report-track"><div class="report-fill" style="width:${wp}%"></div></div>
-            <div class="report-pct">${wp}%</div>
-          </div>`;
-        }).join("")}
+      <div class="report-section"><h3>Completion by week</h3>
+        ${activeWeeks.map(w=>{
+          const wd=w.tasks.filter((_,i)=>taskState[`${w.num}-${i}`]?.checked).length;
+          const wp=w.tasks.length?Math.round(wd/w.tasks.length*100):0;
+          return `<div class="rw-row"><div class="rw-label">W${w.num} — ${esc(w.title)}</div><div class="rw-track"><div class="rw-fill" style="width:${wp}%"></div></div><div class="rw-pct">${w.tasks.length?wp+'%':'–'}</div></div>`;
+        }).join('')}
       </div>
-      ${incomplete.length ? `
-      <div class="report-section">
-        <h3>Incomplete tasks (${incomplete.length})</h3>
-        ${incomplete.map(x=>`<div class="incomplete-item">
-          <span class="incomplete-week">${x.week}</span>
-          <span>${esc(x.task)}</span>
-        </div>`).join("")}
-      </div>` : `
-      <div class="report-section">
-        <h3>Incomplete tasks</h3>
-        <p style="font-size:12px;color:var(--success);font-weight:500">✓ All tasks complete</p>
-      </div>`}
-      <div class="report-section">
-        <h3>Task completion timestamps</h3>
-        ${(()=>{
-          const rows=[];
-          WEEKS.forEach(w=>{ w.tasks.forEach((t,i)=>{
-            const s=taskState[`${w.num}-${i}`];
-            if(s?.checked&&s.timestamp) rows.push(`<div class="incomplete-item">
-              <span class="incomplete-week">W${w.num}</span>
-              <span style="flex:1">${esc(t)}</span>
-              <span style="font-size:10px;color:var(--muted);white-space:nowrap;margin-left:8px">${formatTs(s.timestamp)}</span>
-            </div>`);
-          });});
-          return rows.length ? rows.join("") : `<p style="font-size:12px;color:var(--muted)">No tasks complete yet.</p>`;
-        })()}
+      <div class="report-section"><h3>Incomplete tasks (${incomplete.length})</h3>
+        ${incomplete.length?incomplete.map(x=>`<div class="inc-item"><span class="inc-wk">${x.wk}</span><span>${esc(x.task)}</span></div>`).join(''):'<p style="font-size:12px;color:var(--success);font-weight:500">✓ All tasks complete</p>'}
+      </div>
+      <div class="report-section"><h3>Completion timestamps</h3>
+        ${tsRows.length?tsRows.join(''):'<p style="font-size:12px;color:var(--muted)">No tasks complete yet.</p>'}
       </div>
     </div>
-    <div class="report-footer">
-      <button class="btn btn-outline" onclick="closeReport()">Close</button>
+    <div class="report-ft">
+      <button class="btn btn-outline" onclick="document.getElementById('report-bg').classList.remove('open')">Close</button>
       <button class="btn btn-gold" onclick="window.print()">Print / Save as PDF</button>
     </div>`;
-
-  document.getElementById("report-modal").classList.add("open");
+  document.getElementById('report-bg').classList.add('open');
 }
 
-function closeReport() {
-  document.getElementById("report-modal").classList.remove("open");
+// ── Shutdown rename / delete ──────────────────────────────────────────────────
+function showRenameShut(id) {
+  const s=shutdowns.find(x=>x.id===id); if(!s) return;
+  renamingShutId=id;
+  document.getElementById('rename-shut-input').value=s.name;
+  openModal('modal-rename-shut');
+  setTimeout(()=>{const i=document.getElementById('rename-shut-input');i.focus();i.select();},80);
+}
+async function confirmRenameShut() {
+  const name=document.getElementById('rename-shut-input').value.trim();
+  if(!name||!renamingShutId) return;
+  closeModal('modal-rename-shut');
+  const s=shutdowns.find(x=>x.id===renamingShutId); if(!s) return;
+  s.name=name;
+  await api({action:"renameProject",project:renamingShutId,name:encodeURIComponent(name)});
+  renderHome();
+  if(activeShut?.id===renamingShutId){activeShut.name=name;document.getElementById('track-title').textContent=name;}
+  renamingShutId=null;
+}
+async function deleteShutdown(id) {
+  const s=shutdowns.find(x=>x.id===id); if(!s) return;
+  if(!confirm(`Delete "${s.name}"?\n\nAll checklist data will be permanently removed.`)) return;
+  await api({action:"deleteProject",project:id});
+  shutdowns=shutdowns.filter(x=>x.id!==id);
+  if(activeShut?.id===id){activeShut=null;taskState={};activeWeeks=[];showView('home');}
+  renderHome();
 }
 
-// ── New project ────────────────────────────────────────────
-
-function showNewProject() {
-  document.getElementById("new-proj-modal").classList.add("open");
-  setTimeout(()=>document.getElementById("new-proj-name").focus(),50);
+// ── Template CRUD ─────────────────────────────────────────────────────────────
+function showNewTemplate() {
+  document.getElementById('new-tpl-name').value='';
+  document.getElementById('new-tpl-weeks').value='4';
+  openModal('modal-new-tpl');
+  setTimeout(()=>document.getElementById('new-tpl-name').focus(),80);
 }
-
-function closeNewProject() {
-  document.getElementById("new-proj-modal").classList.remove("open");
-  document.getElementById("new-proj-name").value = "";
+async function createTemplate() {
+  const name=document.getElementById('new-tpl-name').value.trim();
+  const wkCount=parseInt(document.getElementById('new-tpl-weeks').value)||4;
+  if(!name) return;
+  closeModal('modal-new-tpl');
+  const weeks=Array.from({length:wkCount},(_,i)=>({num:i+1,title:`Week ${i+1}`,phase:0,tasks:[]}));
+  const id='tpl_'+Date.now();
+  const r=await api({action:"saveTemplate",tplId:id,name:encodeURIComponent(name),data:encodeURIComponent(JSON.stringify(weeks))});
+  if(r.ok){templates.push({id,name,weeks});renderTemplates();}
 }
-
-async function createProject() {
-  const name = document.getElementById("new-proj-name").value.trim();
-  if (!name) return;
-  closeNewProject();
-  const data = await apiPost({ action:"createProject", project:name });
-  if (data.ok) {
-    projects.push({ id:data.id, name:data.name, createdAt:new Date().toISOString() });
-    renderSidebar();
-    await selectProject(data.id);
+function editTemplate(id) {
+  // Open template in track view for editing (reuses week grid)
+  const tpl=templates.find(x=>x.id===id); if(!tpl) return;
+  editingTplId=id;
+  activeShut=null;
+  activeWeeks=JSON.parse(JSON.stringify(tpl.weeks));
+  taskState={};
+  showView('track');
+  document.getElementById('track-title').textContent=tpl.name+' (template)';
+  document.getElementById('track-meta').textContent='Editing template — changes apply to new shutdowns only';
+  document.getElementById('track-edit-ctrl').style.display='';
+  document.getElementById('track-hd-right').style.display='none';
+  document.getElementById('s-done').textContent='–';
+  document.getElementById('s-rem').textContent='–';
+  document.getElementById('s-pct').textContent='–';
+  document.getElementById('s-bar').style.width='0%';
+  renderWeekGrid();
+}
+function persistWeeks() {
+  if (editingTplId) {
+    // saving template
+    const tpl=templates.find(x=>x.id===editingTplId); if(tpl) tpl.weeks=JSON.parse(JSON.stringify(activeWeeks));
+    api({action:"saveTemplate",tplId:editingTplId,name:encodeURIComponent(tpl?.name||''),data:encodeURIComponent(JSON.stringify(activeWeeks))});
+    renderTemplates();
+  } else if (activeShut) {
+    api({action:"saveShutdownWeeks",project:activeShut.id,data:encodeURIComponent(JSON.stringify(activeWeeks))});
   }
 }
-
-// ── Utilities ──────────────────────────────────────────────
-
-function esc(s) {
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+function showRenameTpl(id) {
+  const t=templates.find(x=>x.id===id); if(!t) return;
+  renamingTplId=id;
+  document.getElementById('rename-tpl-input').value=t.name;
+  openModal('modal-rename-tpl');
+  setTimeout(()=>{const i=document.getElementById('rename-tpl-input');i.focus();i.select();},80);
+}
+async function confirmRenameTpl() {
+  const name=document.getElementById('rename-tpl-input').value.trim();
+  if(!name||!renamingTplId) return;
+  closeModal('modal-rename-tpl');
+  const t=templates.find(x=>x.id===renamingTplId); if(!t) return;
+  t.name=name;
+  await api({action:"renameTemplate",tplId:renamingTplId,name:encodeURIComponent(name)});
+  renderTemplates();
+  renamingTplId=null;
+}
+async function deleteTemplate(id) {
+  const t=templates.find(x=>x.id===id); if(!t) return;
+  if(shutdowns.some(s=>s.templateId===id)){alert(`"${t.name}" is used by one or more shutdowns and cannot be deleted.`);return;}
+  if(!confirm(`Delete template "${t.name}"?`)) return;
+  await api({action:"deleteTemplate",tplId:id});
+  templates=templates.filter(x=>x.id!==id);
+  renderTemplates();
 }
 
-function formatTs(iso) {
-  if (!iso) return "";
-  try {
-    return new Date(iso).toLocaleString("en-AU",{
-      day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"
-    });
-  } catch { return iso; }
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function formatTs(iso){
+  try{return new Date(iso).toLocaleString('en-AU',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return iso;}
 }
+function hardRefresh(){window.location.replace(window.location.href.split('?')[0]+'?v='+Date.now());}
 
-// ── Rename project ────────────────────────────────────────
-
-let renamingId = null;
-
-function showRename(id) {
-  const p = projects.find(x=>x.id===id);
-  if (!p) return;
-  renamingId = id;
-  const inp = document.getElementById("rename-proj-input");
-  inp.value = p.name;
-  document.getElementById("rename-proj-modal").classList.add("open");
-  setTimeout(()=>{ inp.focus(); inp.select(); }, 80);
-}
-
-function closeRenameModal() {
-  document.getElementById("rename-proj-modal").classList.remove("open");
-  renamingId = null;
-}
-
-async function confirmRename() {
-  const newName = document.getElementById("rename-proj-input").value.trim();
-  if (!newName || !renamingId) return;
-  closeRenameModal();
-  const p = projects.find(x=>x.id===renamingId);
-  if (!p) return;
-  p.name = newName;
-  // Update master sheet display name
-  await api({ action:"renameProject", project:renamingId, name:encodeURIComponent(newName) });
-  renderSidebar();
-  // Update page heading if this is the active project
-  if (activeProject?.id === renamingId) {
-    activeProject.name = newName;
-    renderMain(false);
-  }
-}
-
-// ── Delete project ─────────────────────────────────────────
-
-async function deleteProject(id) {
-  const p = projects.find(x=>x.id===id);
-  if (!p) return;
-  if (!confirm(`Delete "${p.name}"?\n\nThis will permanently remove the shutdown and all its checklist data. This cannot be undone.`)) return;
-  await api({ action:"deleteProject", project:id });
-  projects = projects.filter(x=>x.id!==id);
-  if (activeProject?.id === id) {
-    activeProject = null;
-    taskState = {};
-    document.getElementById("main").innerHTML = `<div class="empty" style="margin-top:4rem"><h3>Select a shutdown</h3><p>Choose a project from the sidebar or create a new one.</p></div>`;
-    document.getElementById("btn-report").style.display = "none";
-    document.getElementById("btn-clear").style.display  = "none";
-  }
-  renderSidebar();
-}
-
-// ── Mobile sidebar ────────────────────────────────────────
-
-function toggleSidebar() {
-  const sb = document.getElementById("sidebar");
-  const ov = document.getElementById("sidebar-overlay");
-  const isOpen = sb.classList.contains("open");
-  if (isOpen) { closeSidebar(); } else {
-    sb.classList.add("open");
-    ov.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-}
-
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("sidebar-overlay").classList.remove("open");
-  document.body.style.overflow = "";
-}
-
-// ── Hard refresh ──────────────────────────────────────────
-function hardRefresh() {
-  // Bust cache by appending timestamp, then reload
-  const url = window.location.href.split('?')[0] + '?v=' + Date.now();
-  window.location.replace(url);
-}
+// ── Back button resets template editing ───────────────────────────────────────
+document.querySelector('.track-back').addEventListener('click',()=>{
+  editingTplId=null;
+  document.getElementById('track-hd-right').style.display='';
+  showView('home');
+});
 
 init();
 </script>
