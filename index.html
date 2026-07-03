@@ -452,8 +452,8 @@ async function saveWeekToGAS(sheetId, week) {
     action:  "saveWeek",
     sheetId,
     weekNum: week.num,
-    title:   encodeURIComponent(week.title),
-    tasks:   encodeURIComponent(JSON.stringify(week.tasks)),
+    title:   week.title,
+    tasks:   JSON.stringify(week.tasks),
     phase:   week.phase||0
   });
 }
@@ -476,7 +476,7 @@ async function init() {
   if (!existing12 || existing12.weeks.length !== 12) {
     // Delete stale entry if exists, then recreate cleanly
     if (existing12) await api({action:"deleteTemplate", tplId:"tpl_12w_default"});
-    await api({action:"createTemplate", tplId:"tpl_12w_default", name:encodeURIComponent("12-week standard")});
+    await api({action:"createTemplate", tplId:"tpl_12w_default", name:"12-week standard"});
     for (const w of DEFAULT_12W) {
       await saveWeekToGAS("_tpl_tpl_12w_default", w);
     }
@@ -616,11 +616,16 @@ async function createShutdown() {
   const tplId = document.getElementById('new-shut-tpl').value;
   if (!name) return;
   closeModal('modal-new-shutdown');
-  const r = await api({action:"createProject", name:encodeURIComponent(name), templateId:tplId});
+  const r = await api({action:"createProject", name, templateId:tplId});
   if (r.ok) {
-    shutdowns.push({id:r.id, name:r.name, templateId:tplId, createdAt:new Date().toISOString()});
+    const newShut = {id:r.id, name:r.name, templateId:tplId, createdAt:new Date().toISOString()};
+    shutdowns.push(newShut);
     renderHome();
-    await openShutdown(r.id);
+    showView('home'); // go home first so card is visible
+    // Small delay then open
+    setTimeout(()=>openShutdown(r.id), 100);
+  } else {
+    alert('Failed to create shutdown. Please try again.');
   }
 }
 
@@ -927,7 +932,7 @@ async function confirmRenameShut() {
   closeModal('modal-rename-shut');
   const s=shutdowns.find(x=>x.id===renamingShutId); if(!s) return;
   s.name=name;
-  await api({action:"renameProject",project:renamingShutId,name:encodeURIComponent(name)});
+  await api({action:"renameProject",project:renamingShutId,name});
   renderHome();
   if(activeShut?.id===renamingShutId){activeShut.name=name;document.getElementById('track-title').textContent=name;}
   renamingShutId=null;
@@ -955,7 +960,7 @@ async function createTemplate() {
   closeModal('modal-new-tpl');
   const id='tpl_'+Date.now();
   const weeks=Array.from({length:wkCount},(_,i)=>({num:i+1,title:`Week ${i+1}`,phase:0,tasks:[]}));
-  await api({action:"createTemplate", tplId:id, name:encodeURIComponent(name)});
+  await api({action:"createTemplate", tplId:id, name});
   for (const w of weeks) await saveWeekToGAS("_tpl_"+id, w);
   templates.push({id,name,weeks}); renderTemplates();
 }
@@ -1002,7 +1007,7 @@ async function confirmRenameTpl() {
   closeModal('modal-rename-tpl');
   const t=templates.find(x=>x.id===renamingTplId); if(!t) return;
   t.name=name;
-  await api({action:"renameTemplate",tplId:renamingTplId,name:encodeURIComponent(name)});
+  await api({action:"renameTemplate",tplId:renamingTplId,name});
   renderTemplates();
   renamingTplId=null;
 }
