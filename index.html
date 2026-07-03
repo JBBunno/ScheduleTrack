@@ -60,6 +60,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 .shutdown-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .shutdown-card{background:var(--white);border:1px solid var(--border);border-radius:var(--card-r);padding:16px;cursor:pointer;transition:all 0.15s;position:relative}
 .shutdown-card:hover{box-shadow:0 3px 14px rgba(0,0,0,0.09);border-color:var(--gold)}
+.admin-active .shutdown-card{cursor:pointer}
 .shutdown-card-name{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px}
 .shutdown-card-meta{font-size:11px;color:var(--muted);margin-bottom:12px}
 .shutdown-card-bar{height:6px;background:var(--off);border-radius:3px;overflow:hidden;margin-bottom:6px}
@@ -558,15 +559,15 @@ function renderHome() {
     const pct = s._pct !== undefined ? s._pct : '–';
     const tpl = templates.find(t=>t.id===s.templateId);
     const meta = tpl ? `Template: ${esc(tpl.name)}` : 'No template';
-    return `<div class="shutdown-card" onclick="openShutdown('${s.id}')">
+    return `<div class="shutdown-card">
       <div class="shutdown-card-actions">
-        <button class="card-act-btn rename" onclick="event.stopPropagation();showRenameShut('${s.id}')" title="Rename">✏</button>
-        <button class="card-act-btn del" onclick="event.stopPropagation();deleteShutdown('${s.id}')" title="Delete">🗑</button>
+        <button class="card-act-btn rename" onclick="showRenameShut('${s.id}')" title="Rename">✏</button>
+        <button class="card-act-btn del" onclick="deleteShutdown('${s.id}')" title="Delete">🗑</button>
       </div>
-      <div class="shutdown-card-name">${esc(s.name)}</div>
-      <div class="shutdown-card-meta">${meta}</div>
-      <div class="shutdown-card-bar"><div class="shutdown-card-fill" style="width:${typeof pct==='number'?pct:0}%"></div></div>
-      <div class="shutdown-card-pct">${typeof pct==='number'?pct+'% complete':'Not started'}</div>
+      <div class="shutdown-card-name" onclick="openShutdown('${s.id}')" style="cursor:pointer">${esc(s.name)}</div>
+      <div class="shutdown-card-meta" onclick="openShutdown('${s.id}')" style="cursor:pointer">${meta}</div>
+      <div class="shutdown-card-bar" onclick="openShutdown('${s.id}')" style="cursor:pointer"><div class="shutdown-card-fill" style="width:${typeof pct==='number'?pct:0}%"></div></div>
+      <div class="shutdown-card-pct" onclick="openShutdown('${s.id}')" style="cursor:pointer">${typeof pct==='number'?pct+'% complete':'Not started'}</div>
     </div>`;
   }).join('');
 }
@@ -738,7 +739,10 @@ function updateTileCtrl() {
 }
 function addTile() {
   if (activeWeeks.length>=MAX_W) return;
-  const w = {num:activeWeeks.length+1, title:`Week ${activeWeeks.length+1}`, phase:0, tasks:[]};
+  const nextNum = activeWeeks.length + 1;
+  // Never overwrite an existing week
+  if (activeWeeks.find(x=>x.num===nextNum)) return;
+  const w = {num:nextNum, title:`Week ${nextNum}`, phase:0, tasks:[]};
   activeWeeks.push(w);
   persistWeek(w.num);
   renderWeekGrid();
@@ -970,10 +974,18 @@ async function editTemplate(id) {
   document.getElementById('s-pct').textContent='–';
   document.getElementById('s-bar').style.width='0%';
   document.getElementById('weeks-grid').innerHTML='<div class="loading-msg"><div class="spinner"></div>Loading…</div>';
-  // Always load fresh from GAS
+  // Always load fresh from GAS — sheet name is "_tpl_" + tplId (e.g. "_tpl_tpl_12w_default")
   const wd = await api({action:"getWeeks", sheetId:"_tpl_"+id});
-  activeWeeks = wd.weeks && wd.weeks.length ? wd.weeks : JSON.parse(JSON.stringify(tpl.weeks));
-  tpl.weeks = activeWeeks; // sync in-memory
+  if (wd.weeks && wd.weeks.length) {
+    activeWeeks = wd.weeks;
+  } else if (tpl.weeks && tpl.weeks.length) {
+    // Fall back to in-memory if GAS returns nothing — then save them
+    activeWeeks = JSON.parse(JSON.stringify(tpl.weeks));
+    for (const w of activeWeeks) await saveWeekToGAS("_tpl_"+id, w);
+  } else {
+    activeWeeks = [{num:1,title:"Week 1",phase:0,tasks:[]}];
+  }
+  tpl.weeks = JSON.parse(JSON.stringify(activeWeeks)); // sync in-memory
   renderWeekGrid();
 }
 // persistWeeks replaced by persistWeek(wk) above
