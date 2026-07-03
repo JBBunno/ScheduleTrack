@@ -444,24 +444,21 @@ async function api(params) {
   } catch(e) { return {error:e.message}; }
 }
 
-// For large payloads (templates, week structures) use POST to avoid URL length limits.
-// GAS doPost returns JSON; we use no-cors mode then confirm via a GET ping.
-async function apiSave(action, params) {
-  try {
-    const body = JSON.stringify({action, ...params});
-    await fetch(GAS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {"Content-Type":"text/plain"},
-      body
-    });
-    // no-cors gives opaque response; do a GET ping to confirm it landed
-    await new Promise(r => setTimeout(r, 600));
-    return { ok: true };
-  } catch(e) {
-    console.error("apiSave error:", e);
-    return { error: e.message };
-  }
+// Save one week at a time — tiny URL, no size limits
+// sheetId is either a project id or "_tpl_<tplId>"
+async function saveWeekToGAS(sheetId, week) {
+  return api({
+    action:  "saveWeek",
+    sheetId,
+    weekNum: week.num,
+    title:   encodeURIComponent(week.title),
+    tasks:   encodeURIComponent(JSON.stringify(week.tasks)),
+    phase:   week.phase||0
+  });
+}
+
+async function deleteWeekFromGAS(sheetId, weekNum) {
+  return api({ action:"deleteWeek", sheetId, weekNum });
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -473,16 +470,15 @@ async function init() {
   shutdowns = sd.projects || [];
   templates = td.templates || [];
 
-  // Seed 12-week template if none exist, or if default exists but has wrong week count
+  // Seed 12-week template if none exist or has wrong week count
   const existing12 = templates.find(t=>t.id==="tpl_12w_default");
-  if (!existing12 || existing12.weeks.length !== 12) {
-    await apiSave("saveTemplate",{tplId:"tpl_12w_default", name:"12-week standard", data:JSON.stringify(DEFAULT_12W)});
-    if (existing12) {
-      existing12.weeks = DEFAULT_12W;
-      existing12.name  = "12-week standard";
-    } else {
-      templates.push({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
-    }
+  if (!existing12) {
+    await api({action:"createTemplate", tplId:"tpl_12w_default", name:encodeURIComponent("12-week standard")});
+    for (const w of DEFAULT_12W) await saveWeekToGAS("_tpl_tpl_12w_default", w);
+    templates.push({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
+  } else if (existing12.weeks.length !== 12) {
+    for (const w of DEFAULT_12W) await saveWeekToGAS("_tpl_tpl_12w_default", w);
+    existing12.weeks = DEFAULT_12W;
   }
   renderHome();
   renderTemplates();
@@ -635,17 +631,21 @@ async function openShutdown(id) {
 
   // Load state + per-shutdown week structure
   const [stateData, weeksData] = await Promise.all([
-    api({action:"getState",    project:id}),
-    api({action:"getShutdownWeeks", project:id})
+    api({action:"getState",  project:id}),
+    api({action:"getWeeks",  sheetId:id})
   ]);
 
-  // Resolve week structure: saved > template > blank
-  if (weeksData.weeks) {
-    try { activeWeeks = JSON.parse(weeksData.weeks); } catch(e){}
-  }
+  // Resolve week structure: saved rows > template copy > blank
+  activeWeeks = weeksData.weeks || [];
   if (!activeWeeks.length) {
     const tpl = templates.find(t=>t.id===s.templateId);
-    activeWeeks = tpl ? JSON.parse(JSON.stringify(tpl.weeks)) : [{num:1,title:"Week 1",phase:0,tasks:[]}];
+    if (tpl && tpl.weeks.length) {
+      activeWeeks = JSON.parse(JSON.stringify(tpl.weeks));
+      // Copy template weeks into this shutdown's sheet
+      for (const w of activeWeeks) await saveWeekToGAS(id, w);
+    } else {
+      activeWeeks = [{num:1,title:"Week 1",phase:0,tasks:[]}];
+    }
   }
   if (stateData.state) taskState = stateData.state;
 
@@ -725,30 +725,34 @@ function updateTileCtrl() {
 }
 function addTile() {
   if (activeWeeks.length>=MAX_W) return;
-  activeWeeks.push({num:activeWeeks.length+1,title:`Week ${activeWeeks.length+1}`,phase:0,tasks:[]});
-  persistWeeks(); renderWeekGrid();
+  const w = {num:activeWeeks.length+1, title:`Week ${activeWeeks.length+1}`, phase:0, tasks:[]};
+  activeWeeks.push(w);
+  persistWeek(w.num);
+  renderWeekGrid();
 }
 function removeTile() {
   if (activeWeeks.length<=MIN_W) return;
   const last = activeWeeks[activeWeeks.length-1];
   if (last.tasks.length && !confirm(`Remove Week ${last.num}? It has tasks. They will be lost.`)) return;
+  const sheetId = editingTplId ? "_tpl_"+editingTplId : activeShut?.id;
+  if (sheetId) deleteWeekFromGAS(sheetId, last.num);
   activeWeeks.pop();
-  persistWeeks(); renderWeekGrid();
+  renderWeekGrid();
 }
 
 // ── Admin edit handlers ───────────────────────────────────────────────────────
 function onTitleChange(wk,val) {
   const w=activeWeeks.find(x=>x.num===wk); if(w) w.title=val;
-  scheduleSave(wk);
+  scheduleWeekSave(wk);
 }
 function onTaskChange(wk,idx,val) {
   const w=activeWeeks.find(x=>x.num===wk); if(w) w.tasks[idx]=val;
-  scheduleSave(wk);
+  scheduleWeekSave(wk);
 }
 function deleteTask(wk,idx) {
   const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
   w.tasks.splice(idx,1);
-  persistWeeks();
+  persistWeek(wk);
   const card=document.getElementById(`wcard-${wk}`);
   if(card) card.outerHTML=renderWeekCard(w);
 }
@@ -758,7 +762,7 @@ function moveTask(wk, idx, dir) {
   if (newIdx < 0 || newIdx >= w.tasks.length) return;
   // Swap
   [w.tasks[idx], w.tasks[newIdx]] = [w.tasks[newIdx], w.tasks[idx]];
-  persistWeeks();
+  persistWeek(wk);
   // Re-render just this card
   const card = document.getElementById(`wcard-${wk}`);
   if (card) card.outerHTML = renderWeekCard(w);
@@ -769,21 +773,23 @@ function addTask(wk) {
   const val=inp.value.trim(); if(!val) return;
   const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
   w.tasks.push(val); inp.value='';
-  persistWeeks();
+  persistWeek(wk);
   const card=document.getElementById(`wcard-${wk}`);
   if(card) card.outerHTML=renderWeekCard(w);
 }
-function scheduleSave(wk) {
+function scheduleWeekSave(wk) {
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
-    persistWeeks();
+    persistWeek(wk);
     const ind=document.getElementById(`sind-${wk}`);
     if(ind){ind.classList.add('show');setTimeout(()=>ind.classList.remove('show'),1800);}
   },700);
 }
-function persistWeeks() {
-  if (!activeShut) return;
-  api({action:"saveShutdownWeeks", project:activeShut.id, data:encodeURIComponent(JSON.stringify(activeWeeks))});
+function persistWeek(wk) {
+  const w = activeWeeks.find(x=>x.num===wk); if(!w) return;
+  const sheetId = editingTplId ? "_tpl_"+editingTplId : activeShut?.id;
+  if (!sheetId) return;
+  saveWeekToGAS(sheetId, w);
 }
 
 // ── Toggle task ───────────────────────────────────────────────────────────────
@@ -926,17 +932,16 @@ async function createTemplate() {
   const wkCount=parseInt(document.getElementById('new-tpl-weeks').value)||4;
   if(!name) return;
   closeModal('modal-new-tpl');
-  const weeks=Array.from({length:wkCount},(_,i)=>({num:i+1,title:`Week ${i+1}`,phase:0,tasks:[]}));
   const id='tpl_'+Date.now();
-  await apiSave("saveTemplate",{tplId:id, name, data:JSON.stringify(weeks)});
+  const weeks=Array.from({length:wkCount},(_,i)=>({num:i+1,title:`Week ${i+1}`,phase:0,tasks:[]}));
+  await api({action:"createTemplate", tplId:id, name:encodeURIComponent(name)});
+  for (const w of weeks) await saveWeekToGAS("_tpl_"+id, w);
   templates.push({id,name,weeks}); renderTemplates();
 }
-function editTemplate(id) {
-  // Open template in track view for editing (reuses week grid)
+async function editTemplate(id) {
   const tpl=templates.find(x=>x.id===id); if(!tpl) return;
   editingTplId=id;
   activeShut=null;
-  activeWeeks=JSON.parse(JSON.stringify(tpl.weeks));
   taskState={};
   showView('track');
   document.getElementById('track-title').textContent=tpl.name+' (template)';
@@ -947,17 +952,14 @@ function editTemplate(id) {
   document.getElementById('s-rem').textContent='–';
   document.getElementById('s-pct').textContent='–';
   document.getElementById('s-bar').style.width='0%';
+  document.getElementById('weeks-grid').innerHTML='<div class="loading-msg"><div class="spinner"></div>Loading…</div>';
+  // Always load fresh from GAS
+  const wd = await api({action:"getWeeks", sheetId:"_tpl_"+id});
+  activeWeeks = wd.weeks && wd.weeks.length ? wd.weeks : JSON.parse(JSON.stringify(tpl.weeks));
+  tpl.weeks = activeWeeks; // sync in-memory
   renderWeekGrid();
 }
-function persistWeeks() {
-  if (editingTplId) {
-    const tpl=templates.find(x=>x.id===editingTplId); if(tpl) tpl.weeks=JSON.parse(JSON.stringify(activeWeeks));
-    apiSave("saveTemplate",{tplId:editingTplId, name:tpl?.name||'', data:JSON.stringify(activeWeeks)});
-    renderTemplates();
-  } else if (activeShut) {
-    apiSave("saveShutdownWeeks",{project:activeShut.id, data:JSON.stringify(activeWeeks)});
-  }
-}
+// persistWeeks replaced by persistWeek(wk) above
 function showRenameTpl(id) {
   const t=templates.find(x=>x.id===id); if(!t) return;
   renamingTplId=id;
