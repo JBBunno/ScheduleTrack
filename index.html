@@ -641,17 +641,21 @@ async function openShutdown(id) {
     api({action:"getWeeks",  sheetId:id})
   ]);
 
-  // Resolve week structure: saved rows > template copy > blank
+  // Resolve week structure: saved rows > fresh template load > blank
   activeWeeks = weeksData.weeks || [];
   if (!activeWeeks.length) {
+    // Load template weeks fresh from GAS (not stale in-memory copy)
     const tpl = templates.find(t=>t.id===s.templateId);
-    if (tpl && tpl.weeks.length) {
-      activeWeeks = JSON.parse(JSON.stringify(tpl.weeks));
-      // Copy template weeks into this shutdown's sheet
-      for (const w of activeWeeks) await saveWeekToGAS(id, w);
+    if (tpl) {
+      const tplWeeks = await api({action:"getWeeks", sheetId:"_tpl_"+s.templateId});
+      activeWeeks = (tplWeeks.weeks && tplWeeks.weeks.length)
+        ? JSON.parse(JSON.stringify(tplWeeks.weeks))
+        : [{num:1,title:"Week 1",phase:0,tasks:[]}];
     } else {
       activeWeeks = [{num:1,title:"Week 1",phase:0,tasks:[]}];
     }
+    // Copy into this shutdown's own sheet so edits don't affect the template
+    for (const w of activeWeeks) await saveWeekToGAS(id, w);
   }
   if (stateData.state) taskState = stateData.state;
 
