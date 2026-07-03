@@ -354,13 +354,21 @@ async function post(body) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  const data = await get({action:"load"});
-  templates = data.templates || [];
-  shutdowns = data.shutdowns || [];
-
+  try {
+    // 15 second timeout on the load call
+    const data = await Promise.race([
+      get({action:"load"}),
+      new Promise((_,r)=>setTimeout(()=>r(new Error("timeout")),15000))
+    ]);
+    templates = data.templates || [];
+    shutdowns = data.shutdowns || [];
+  } catch(e) {
+    document.getElementById('sd-list').innerHTML = '<div class="empty"><h3>Could not connect</h3><p>Check your GAS deployment URL and try refreshing.</p><button class="btn btn-gold" onclick="hardRefresh()">Retry</button></div>';
+    console.error("Load error:", e);
+    return;
+  }
   // Seed 12-week standard if missing
-  const has12 = templates.find(t=>t.id==="tpl_12w_default");
-  if (!has12) {
+  if (!templates.find(t=>t.id==="tpl_12w_default")) {
     await post({action:"saveTemplate", id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
     templates.unshift({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
   }
