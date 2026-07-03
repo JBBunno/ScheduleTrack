@@ -444,6 +444,26 @@ async function api(params) {
   } catch(e) { return {error:e.message}; }
 }
 
+// For large payloads (templates, week structures) use POST to avoid URL length limits.
+// GAS doPost returns JSON; we use no-cors mode then confirm via a GET ping.
+async function apiSave(action, params) {
+  try {
+    const body = JSON.stringify({action, ...params});
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {"Content-Type":"text/plain"},
+      body
+    });
+    // no-cors gives opaque response; do a GET ping to confirm it landed
+    await new Promise(r => setTimeout(r, 600));
+    return { ok: true };
+  } catch(e) {
+    console.error("apiSave error:", e);
+    return { error: e.message };
+  }
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 async function init() {
   const [sd, td] = await Promise.all([
@@ -456,14 +476,12 @@ async function init() {
   // Seed 12-week template if none exist, or if default exists but has wrong week count
   const existing12 = templates.find(t=>t.id==="tpl_12w_default");
   if (!existing12 || existing12.weeks.length !== 12) {
-    const r = await api({action:"saveTemplate", tplId:"tpl_12w_default", name:encodeURIComponent("12-week standard"), data:encodeURIComponent(JSON.stringify(DEFAULT_12W))});
-    if (r.ok) {
-      if (existing12) {
-        existing12.weeks = DEFAULT_12W;
-        existing12.name  = "12-week standard";
-      } else {
-        templates.push({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
-      }
+    await apiSave("saveTemplate",{tplId:"tpl_12w_default", name:"12-week standard", data:JSON.stringify(DEFAULT_12W)});
+    if (existing12) {
+      existing12.weeks = DEFAULT_12W;
+      existing12.name  = "12-week standard";
+    } else {
+      templates.push({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
     }
   }
   renderHome();
@@ -910,8 +928,8 @@ async function createTemplate() {
   closeModal('modal-new-tpl');
   const weeks=Array.from({length:wkCount},(_,i)=>({num:i+1,title:`Week ${i+1}`,phase:0,tasks:[]}));
   const id='tpl_'+Date.now();
-  const r=await api({action:"saveTemplate",tplId:id,name:encodeURIComponent(name),data:encodeURIComponent(JSON.stringify(weeks))});
-  if(r.ok){templates.push({id,name,weeks});renderTemplates();}
+  await apiSave("saveTemplate",{tplId:id, name, data:JSON.stringify(weeks)});
+  templates.push({id,name,weeks}); renderTemplates();
 }
 function editTemplate(id) {
   // Open template in track view for editing (reuses week grid)
@@ -933,12 +951,11 @@ function editTemplate(id) {
 }
 function persistWeeks() {
   if (editingTplId) {
-    // saving template
     const tpl=templates.find(x=>x.id===editingTplId); if(tpl) tpl.weeks=JSON.parse(JSON.stringify(activeWeeks));
-    api({action:"saveTemplate",tplId:editingTplId,name:encodeURIComponent(tpl?.name||''),data:encodeURIComponent(JSON.stringify(activeWeeks))});
+    apiSave("saveTemplate",{tplId:editingTplId, name:tpl?.name||'', data:JSON.stringify(activeWeeks)});
     renderTemplates();
   } else if (activeShut) {
-    api({action:"saveShutdownWeeks",project:activeShut.id,data:encodeURIComponent(JSON.stringify(activeWeeks))});
+    apiSave("saveShutdownWeeks",{project:activeShut.id, data:JSON.stringify(activeWeeks)});
   }
 }
 function showRenameTpl(id) {
