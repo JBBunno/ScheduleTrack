@@ -470,15 +470,21 @@ async function init() {
   shutdowns = sd.projects || [];
   templates = td.templates || [];
 
-  // Seed 12-week template if none exist or has wrong week count
+  // Seed 12-week standard template if missing or incomplete
   const existing12 = templates.find(t=>t.id==="tpl_12w_default");
-  if (!existing12) {
+  if (!existing12 || existing12.weeks.length !== 12) {
+    // Delete stale entry if exists, then recreate cleanly
+    if (existing12) await api({action:"deleteTemplate", tplId:"tpl_12w_default"});
     await api({action:"createTemplate", tplId:"tpl_12w_default", name:encodeURIComponent("12-week standard")});
-    for (const w of DEFAULT_12W) await saveWeekToGAS("_tpl_tpl_12w_default", w);
-    templates.push({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
-  } else if (existing12.weeks.length !== 12) {
-    for (const w of DEFAULT_12W) await saveWeekToGAS("_tpl_tpl_12w_default", w);
-    existing12.weeks = DEFAULT_12W;
+    for (const w of DEFAULT_12W) {
+      await saveWeekToGAS("_tpl_tpl_12w_default", w);
+    }
+    if (existing12) {
+      existing12.weeks = DEFAULT_12W;
+      existing12.name  = "12-week standard";
+    } else {
+      templates.unshift({id:"tpl_12w_default", name:"12-week standard", weeks:DEFAULT_12W});
+    }
   }
   renderHome();
   renderTemplates();
