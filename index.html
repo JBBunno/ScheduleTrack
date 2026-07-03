@@ -146,6 +146,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 .task-edit-input:focus{border-color:var(--admin)}
 .task-del-btn{width:20px;height:20px;border-radius:3px;border:1px solid #fca5a5;background:#fee2e2;color:var(--danger);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
 .task-del-btn:hover{background:var(--danger);color:white}
+.task-move-btn{width:20px;height:20px;border-radius:3px;border:1px solid var(--admin-bd);background:white;color:var(--admin);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0;line-height:1}
+.task-move-btn:hover{background:var(--admin);color:white}
+.task-move-btn:disabled{opacity:0.25;cursor:not-allowed}
 .task-add-row{margin-top:6px;display:flex;gap:6px}
 .task-add-input{flex:1;font-size:12px;padding:4px 8px;border:1px dashed var(--admin-bd);border-radius:4px;background:white;outline:none;font-family:inherit;color:var(--muted)}
 .task-add-input:focus{border-color:var(--admin);color:var(--text)}
@@ -715,6 +718,18 @@ function deleteTask(wk,idx) {
   const card=document.getElementById(`wcard-${wk}`);
   if(card) card.outerHTML=renderWeekCard(w);
 }
+function moveTask(wk, idx, dir) {
+  const w = activeWeeks.find(x=>x.num===wk); if(!w) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= w.tasks.length) return;
+  // Swap
+  [w.tasks[idx], w.tasks[newIdx]] = [w.tasks[newIdx], w.tasks[idx]];
+  persistWeeks();
+  // Re-render just this card
+  const card = document.getElementById(`wcard-${wk}`);
+  if (card) card.outerHTML = renderWeekCard(w);
+}
+
 function addTask(wk) {
   const inp=document.getElementById(`tadd-${wk}`); if(!inp) return;
   const val=inp.value.trim(); if(!val) return;
