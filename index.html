@@ -627,6 +627,9 @@ async function createShutdown() {
 async function openShutdown(id) {
   const s = shutdowns.find(x=>x.id===id);
   if (!s) return;
+  // Reset any template editing state
+  editingTplId = null;
+  document.getElementById('track-hd-right').style.display='';
   activeShut = s;
   taskState  = {};
   activeWeeks = [];
@@ -791,6 +794,10 @@ function scheduleWeekSave(wk) {
   clearTimeout(saveTimer);
   saveTimer=setTimeout(()=>{
     persistWeek(wk);
+    // Also save all other weeks in case user edits multiple tiles quickly
+    if (editingTplId) {
+      activeWeeks.filter(w=>w.num!==wk).forEach(w=>saveWeekToGAS("_tpl_"+editingTplId, w));
+    }
     const ind=document.getElementById(`sind-${wk}`);
     if(ind){ind.classList.add('show');setTimeout(()=>ind.classList.remove('show'),1800);}
   },700);
@@ -1004,7 +1011,20 @@ function formatTs(iso){
 function hardRefresh(){window.location.replace(window.location.href.split('?')[0]+'?v='+Date.now());}
 
 // ── Back button resets template editing ───────────────────────────────────────
-document.querySelector('.track-back').addEventListener('click',()=>{
+document.querySelector('.track-back').addEventListener('click', async ()=>{
+  // Flush any pending debounced save before leaving
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    if (editingTplId) {
+      // Save all weeks immediately
+      for (const w of activeWeeks) await saveWeekToGAS("_tpl_"+editingTplId, w);
+      // Sync in-memory template
+      const tpl = templates.find(x=>x.id===editingTplId);
+      if (tpl) tpl.weeks = JSON.parse(JSON.stringify(activeWeeks));
+      renderTemplates();
+    }
+  }
   editingTplId=null;
   document.getElementById('track-hd-right').style.display='';
   showView('home');
