@@ -608,10 +608,11 @@ function editTemplate(id) {
 
 async function saveActiveWeeks() {
   if (activeTpl) {
-    activeTpl.weeks = JSON.parse(JSON.stringify(activeWeeks));
-    // Snapshot activeWeeks at save time (before any async gaps)
     const weeksToSave = JSON.parse(JSON.stringify(activeWeeks));
+    // Update BOTH activeTpl and the templates array entry
     activeTpl.weeks = weeksToSave;
+    const tplEntry = templates.find(t=>t.id===activeTpl.id);
+    if (tplEntry) tplEntry.weeks = weeksToSave;
     const r = await post({action:"saveTemplate", id:activeTpl.id, name:activeTpl.name, weeks:weeksToSave});
     const ss = document.getElementById('save-status');
     if (ss) {
@@ -619,6 +620,13 @@ async function saveActiveWeeks() {
         ss.style.color='var(--success)';
         ss.textContent='✓ Saved';
         setTimeout(()=>{if(ss)ss.textContent='';},2000);
+        // Reload templates from GAS to guarantee in-memory state matches Sheet
+        get({action:"load"}).then(data=>{
+          if (data.templates) {
+            templates = data.templates;
+            renderTemplates();
+          }
+        }).catch(()=>{});
       } else if (r && r.error) {
         ss.style.color='var(--danger)';
         ss.textContent='⚠ Save failed — check console';
