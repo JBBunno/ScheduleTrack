@@ -381,7 +381,8 @@ async function post(body) {
   try {
     const json = JSON.stringify(body);
     const bytes = new TextEncoder().encode(json);
-    const binStr = Array.from(bytes, b=>String.fromCharCode(b)).join('');
+    let binStr = '';
+    for (let i = 0; i < bytes.length; i++) binStr += String.fromCharCode(bytes[i]);
     const b64 = btoa(binStr);
 
     // If small enough, send in one GET
