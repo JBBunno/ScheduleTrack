@@ -380,12 +380,31 @@ async function get(params) {
 async function post(body) {
   try {
     const json = JSON.stringify(body);
-    // Safe UTF-8 base64 encoding
     const bytes = new TextEncoder().encode(json);
     const binStr = Array.from(bytes, b=>String.fromCharCode(b)).join('');
     const b64 = btoa(binStr);
-    const result = await get({p: b64});
-    if (result.error) console.error('GAS error:', result.error, '| action:', body.action);
+
+    // If small enough, send in one GET
+    if (b64.length < 6000) {
+      const result = await get({p: b64});
+      if (result.error) console.error('GAS error:', result.error, '| action:', body.action);
+      return result;
+    }
+
+    // Large payload — split into chunks and send via chunked GAS calls
+    const CHUNK = 5000;
+    const id = 'chunk_' + Date.now();
+    const chunks = [];
+    for (let i = 0; i < b64.length; i += CHUNK) chunks.push(b64.slice(i, i + CHUNK));
+    console.log(`Sending ${chunks.length} chunks for action: ${body.action}`);
+
+    for (let i = 0; i < chunks.length; i++) {
+      const r = await get({chunk: chunks[i], chunkId: id, chunkIdx: i, chunkTotal: chunks.length});
+      if (r.error) { console.error('Chunk error:', r.error); return r; }
+    }
+    // Final call to assemble and execute
+    const result = await get({chunkFinish: id});
+    if (result.error) console.error('GAS chunk finish error:', result.error, '| action:', body.action);
     return result;
   } catch(e) {
     console.error('post() failed:', e.message, '| action:', body.action);
