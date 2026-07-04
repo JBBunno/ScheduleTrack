@@ -526,7 +526,6 @@ function openShutdown(id) {
   }
   activeWeeks = JSON.parse(JSON.stringify(s.weeks));
   document.getElementById('trk-title').textContent = s.name;
-  const tpl = templates.find(t=>t.id===s.templateId);
   document.getElementById('trk-meta').textContent = tpl ? 'Template: '+tpl.name : 'Custom';
   document.getElementById('trk-acts').style.display='';
   showView('track');
