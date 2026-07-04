@@ -143,6 +143,30 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 .addbtn{padding:4px 8px;border-radius:4px;border:none;background:var(--admin);color:#fff;font-size:11px;cursor:pointer}
 .addbtn:hover{background:#6d28d9}
 .emptile{padding:16px 0;text-align:center;font-size:11px;color:var(--muted);font-style:italic}
+/* Info button */
+.ibtn{width:16px;height:16px;border-radius:50%;border:1.5px solid #93c5fd;background:#eff6ff;color:#2563eb;font-size:9px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:4px;line-height:1;padding:0;transition:all .15s;vertical-align:middle}
+.ibtn:hover{background:#2563eb;color:#fff;border-color:#2563eb}
+.ibtn.admin-info{border-color:var(--admin-bd);background:var(--admin-lt);color:var(--admin)}
+.ibtn.admin-info:hover{background:var(--admin);color:#fff}
+.ibtn.off{opacity:.35}
+/* Info panel */
+.infopanel{position:fixed;z-index:500;background:#fff;border:1px solid var(--border);border-radius:var(--cr);box-shadow:0 8px 32px rgba(0,0,0,.15);width:320px;max-width:90vw}
+.infopanel-hd{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px}
+.infopanel-title{font-size:13px;font-weight:600;color:var(--navy);flex:1;line-height:1.3}
+.infopanel-close{width:22px;height:22px;border:none;background:var(--off);border-radius:4px;cursor:pointer;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.infopanel-close:hover{background:var(--border);color:var(--text)}
+.infopanel-body{padding:12px 14px;font-size:12px;color:var(--text);line-height:1.6;white-space:pre-wrap;max-height:260px;overflow-y:auto}
+.infopanel-body.empty{color:var(--muted);font-style:italic}
+/* Info edit panel (admin) */
+.info-edit{background:var(--admin-lt);border:1px solid var(--admin-bd);border-radius:var(--r);padding:10px;margin-top:6px}
+.info-edit-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.info-edit-hd label{font-size:11px;font-weight:600;color:var(--admin);flex:1}
+.info-toggle{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
+.info-toggle input{cursor:pointer}
+.info-textarea{width:100%;font-size:12px;padding:6px 8px;border:1px solid var(--admin-bd);border-radius:4px;background:#fff;outline:none;font-family:inherit;color:var(--text);resize:vertical;min-height:70px;line-height:1.5}
+.info-textarea:focus{border-color:var(--admin)}
+/* Hide info on mobile */
+@media(max-width:640px){.ibtn{display:none}.infopanel{display:none!important}}
 /* Modals */
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:1rem}
 .mbg.open{display:flex}
@@ -303,6 +327,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--off);color:var
 </div></div>
 
 <div class="rpbg" id="rpbg"><div class="rpbox" id="rpbox"></div></div>
+
+<!-- Info panel (desktop only) -->
+<div class="infopanel" id="infopanel" style="display:none">
+  <div class="infopanel-hd">
+    <div class="infopanel-title" id="infopanel-title"></div>
+    <button class="infopanel-close" onclick="closeInfo()">✕</button>
+  </div>
+  <div class="infopanel-body" id="infopanel-body"></div>
+</div>
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -600,14 +633,28 @@ function renderWkCard(w) {
   if (isEdit) {
     const last = w.tasks.length-1;
     body = w.tasks.map((t,i)=>{
-      const ud = i===0?' disabled':'', dd = i===last?' disabled':'';
-      return `<div class="erow">
-        <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">
-          <button class="movbtn"${ud} onclick="moveTask(${w.num},${i},-1)">▲</button>
-          <button class="movbtn"${dd} onclick="moveTask(${w.num},${i},1)">▼</button>
+      const ud   = i===0?' disabled':'', dd = i===last?' disabled':'';
+      const txt  = esc(taskText(t));
+      const info = esc(taskInfo(t));
+      const infoOn = taskInfoOn(t);
+      const chk  = infoOn ? 'checked' : '';
+      return `<div class="erow" style="flex-direction:column;align-items:stretch;gap:4px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0">
+            <button class="movbtn"${ud} onclick="moveTask(${w.num},${i},-1)">▲</button>
+            <button class="movbtn"${dd} onclick="moveTask(${w.num},${i},1)">▼</button>
+          </div>
+          <input class="einput" value="${txt}" oninput="onTask(${w.num},${i},this.value)">
+          <button class="ibtn admin-info ${infoOn?'':'off'}" onclick="toggleInfoEdit(${w.num},${i})" title="${infoOn?'Info on':'Info off'}">ⓘ</button>
+          <button class="delbtn" onclick="delTask(${w.num},${i})">×</button>
         </div>
-        <input class="einput" value="${esc(t)}" oninput="onTask(${w.num},${i},this.value)">
-        <button class="delbtn" onclick="delTask(${w.num},${i})">×</button>
+        <div class="info-edit" id="ie-${w.num}-${i}" style="display:${infoOn?'block':'none'}">
+          <div class="info-edit-hd">
+            <label>ⓘ Instruction text</label>
+            <label class="info-toggle"><input type="checkbox" ${chk} onchange="onInfoToggle(${w.num},${i},this.checked)"> Show to users</label>
+          </div>
+          <textarea class="info-textarea" placeholder="Enter instructions for this task…" oninput="onInfoText(${w.num},${i},this.value)">${info}</textarea>
+        </div>
       </div>`;
     }).join('')
     +`<div class="addrow">
@@ -618,11 +665,15 @@ function renderWkCard(w) {
     body = '<div class="emptile">No tasks — enter admin mode to add some.</div>';
   } else {
     body = w.tasks.map((t,i)=>{
-      const s = state[w.num+'-'+i]||{};
-      const ts = s.checked&&s.timestamp?`<span class="tts">${fmtTs(s.timestamp)}</span>`:'';
+      const s    = state[w.num+'-'+i]||{};
+      const ts   = s.checked&&s.timestamp?`<span class="tts">${fmtTs(s.timestamp)}</span>`:'';
+      const info = taskInfo(t);
+      const infoOn = taskInfoOn(t);
+      const iBtn = infoOn && info
+        ? `<button class="ibtn" onclick="showInfo(event,${w.num},${i})" title="Instructions">ⓘ</button>` : '';
       return `<div class="trow" onclick="toggleTask(${w.num},${i})">
         <div class="cb ${s.checked?'on':''}"></div>
-        <div class="ttxt ${s.checked?'done':''}">${esc(t)}${ts}</div>
+        <div class="ttxt ${s.checked?'done':''}">${esc(taskText(t))}${iBtn}${ts}</div>
       </div>`;
     }).join('');
   }
@@ -688,11 +739,24 @@ function moveTask(wk, idx, dir) {
   saveActiveWeeks();
   const c=document.getElementById('wc-'+wk); if(c) c.outerHTML=renderWkCard(w);
 }
+function toggleInfoEdit(wk, idx) {
+  const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
+  w.tasks[idx] = toTaskObj(w.tasks[idx]);
+  const currently = w.tasks[idx].infoOn;
+  w.tasks[idx].infoOn = !currently;
+  // Toggle the edit panel visibility and button style
+  const panel = document.getElementById('ie-'+wk+'-'+idx);
+  const btn   = document.querySelector(`#wc-${wk} .erow:nth-child(${idx+1}) .ibtn.admin-info`);
+  if (panel) panel.style.display = w.tasks[idx].infoOn ? 'block' : 'none';
+  if (btn)   { btn.classList.toggle('off', !w.tasks[idx].infoOn); btn.title = w.tasks[idx].infoOn ? 'Info on' : 'Info off'; }
+  scheduleSave(wk);
+}
+
 function addTask(wk) {
   const inp=document.getElementById('add-'+wk); if(!inp) return;
   const val=inp.value.trim(); if(!val) return;
   const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
-  w.tasks.push(val); inp.value='';
+  w.tasks.push({text:val, info:'', infoOn:false}); inp.value='';
   saveActiveWeeks();
   const c=document.getElementById('wc-'+wk); if(c) c.outerHTML=renderWkCard(w);
 }
@@ -839,6 +903,57 @@ async function deleteTemplate(id) {
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Task normalisation — tasks are stored as {text,info,infoOn} or legacy plain strings
+function taskText(t) { return typeof t==='string' ? t : (t.text||''); }
+function taskInfo(t) { return typeof t==='string' ? '' : (t.info||''); }
+function taskInfoOn(t) { return typeof t==='string' ? false : (t.infoOn===true); }
+function toTaskObj(t) {
+  if (typeof t==='string') return {text:t, info:'', infoOn:false};
+  return {text:t.text||'', info:t.info||'', infoOn:t.infoOn===true};
+}
+
+// Info panel
+let infoPanelWk=null, infoPanelIdx=null;
+function showInfo(event, wk, idx) {
+  event.stopPropagation();
+  const w = activeWeeks.find(x=>x.num===wk); if(!w) return;
+  const t = w.tasks[idx]; if(t===undefined) return;
+  const txt  = taskText(t);
+  const info = taskInfo(t);
+  const panel = document.getElementById('infopanel');
+  const body  = document.getElementById('infopanel-body');
+  document.getElementById('infopanel-title').textContent = txt;
+  if (info) { body.className='infopanel-body'; body.textContent=info; }
+  else       { body.className='infopanel-body empty'; body.textContent='No instructions added yet.'; }
+  // Position near the click
+  panel.style.display='block';
+  const x = Math.min(event.clientX+10, window.innerWidth-340);
+  const y = Math.min(event.clientY+10, window.innerHeight-320);
+  panel.style.left=x+'px'; panel.style.top=y+'px';
+  infoPanelWk=wk; infoPanelIdx=idx;
+}
+function closeInfo() {
+  document.getElementById('infopanel').style.display='none';
+  infoPanelWk=null; infoPanelIdx=null;
+}
+document.addEventListener('click', e=>{
+  const panel=document.getElementById('infopanel');
+  if(panel.style.display!=='none' && !panel.contains(e.target)) closeInfo();
+});
+
+function onInfoText(wk, idx, val) {
+  const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
+  w.tasks[idx] = toTaskObj(w.tasks[idx]);
+  w.tasks[idx].info = val;
+  scheduleSave(wk);
+}
+function onInfoToggle(wk, idx, on) {
+  const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
+  w.tasks[idx] = toTaskObj(w.tasks[idx]);
+  w.tasks[idx].infoOn = on;
+  scheduleSave(wk);
+}
 function fmtTs(iso){try{return new Date(iso).toLocaleString('en-AU',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return iso;}}
 function hardRefresh(){window.location.replace(window.location.href.split('?')[0]+'?v='+Date.now());}
 
