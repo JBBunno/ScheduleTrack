@@ -536,22 +536,8 @@ function openShutdown(id) {
   const s = shutdowns.find(x=>x.id===id); if(!s) return;
   activeTpl  = null;
   activeSD   = s;
-  // If shutdown weeks are plain strings (pre-info), merge info from template
-  const tpl = templates.find(t=>t.id===s.templateId);
-  if (tpl && s.weeks.length === tpl.weeks.length) {
-    s.weeks = s.weeks.map((w,wi) => ({
-      ...w,
-      tasks: w.tasks.map((t,ti) => {
-        const tplTask = tpl.weeks[wi]?.tasks[ti];
-        if (!tplTask) return t;
-        const obj = toTaskObj(t);
-        const tplObj = toTaskObj(tplTask);
-        // Merge info from template into shutdown task (template is source of truth for info)
-        return { text: obj.text, info: tplObj.info, infoOn: tplObj.infoOn };
-      })
-    }));
-  }
   activeWeeks = JSON.parse(JSON.stringify(s.weeks));
+  const tpl = templates.find(t=>t.id===s.templateId);
   document.getElementById('trk-title').textContent = s.name;
   document.getElementById('trk-meta').textContent = tpl ? 'Template: '+tpl.name : 'Custom';
   document.getElementById('trk-acts').style.display='';
@@ -736,8 +722,11 @@ function renderWkCard(w) {
     body = w.tasks.map((t,i)=>{
       const s    = state[w.num+'-'+i]||{};
       const ts   = s.checked&&s.timestamp?`<span class="tts">${fmtTs(s.timestamp)}</span>`:'';
-      const info = taskInfo(t);
-      const infoOn = taskInfoOn(t);
+      // Always read info from template — template is source of truth
+      const tplW = activeTpl ? null : templates.find(tp=>tp.id===activeSD?.templateId);
+      const tplTask = tplW?.weeks.find(tw=>tw.num===w.num)?.tasks[i];
+      const info   = tplTask ? taskInfo(tplTask)   : taskInfo(t);
+      const infoOn = tplTask ? taskInfoOn(tplTask) : taskInfoOn(t);
       const iBtn = infoOn && info
         ? `<button class="ibtn" onclick="showInfo(event,${w.num},${i})" title="Instructions">ⓘ</button>` : '';
       return `<div class="trow" onclick="toggleTask(${w.num},${i})">
@@ -988,7 +977,10 @@ function showInfo(event, wk, idx) {
   const w = activeWeeks.find(x=>x.num===wk); if(!w) return;
   const t = w.tasks[idx]; if(t===undefined) return;
   const txt  = taskText(t);
-  const info = taskInfo(t);
+  // Always read info from template
+  const tplW = activeTpl ? null : templates.find(tp=>tp.id===activeSD?.templateId);
+  const tplTask = tplW?.weeks.find(tw=>tw.num===wk)?.tasks[idx];
+  const info = tplTask ? taskInfo(tplTask) : taskInfo(t);
   const panel = document.getElementById('infopanel');
   const body  = document.getElementById('infopanel-body');
   document.getElementById('infopanel-title').textContent = txt;
