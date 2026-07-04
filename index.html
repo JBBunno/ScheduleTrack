@@ -615,11 +615,24 @@ function scheduleSave(wk) {
 
 // ── Back button ───────────────────────────────────────────────────────────────
 document.getElementById('track-back').addEventListener('click', async ()=>{
+  // Flush any open info textareas before saving
+  document.querySelectorAll('.info-textarea').forEach(ta => {
+    const id = ta.id; // ita-wk-idx
+    const parts = id.split('-');
+    if (parts.length === 3) {
+      const wk = parseInt(parts[1]), idx = parseInt(parts[2]);
+      const w = activeWeeks.find(x=>x.num===wk);
+      if (w && w.tasks[idx] !== undefined) {
+        w.tasks[idx] = toTaskObj(w.tasks[idx]);
+        w.tasks[idx].info = ta.value;
+      }
+    }
+  });
   if (saveTimer) {
     clearTimeout(saveTimer);
     saveTimer=null;
-    await saveActiveWeeks();
   }
+  await saveActiveWeeks();
   activeTpl=null; activeSD=null; activeWeeks=[];
   document.getElementById('trk-acts').style.display='';
   renderHome();
@@ -667,7 +680,7 @@ function renderWkCard(w) {
             <label>ⓘ Instruction text</label>
             <label class="info-toggle"><input type="checkbox" ${chk} onchange="onInfoToggle(${w.num},${i},this.checked)"> Show to users</label>
           </div>
-          <textarea class="info-textarea" id="ita-${w.num}-${i}" placeholder="Enter instructions for this task…" oninput="onInfoText(${w.num},${i},this.value)">${taskInfo(t)}</textarea>
+          <textarea class="info-textarea" id="ita-${w.num}-${i}" placeholder="Enter instructions for this task…" oninput="onInfoText(${w.num},${i},this.value)" onblur="onInfoText(${w.num},${i},this.value,true)">${taskInfo(t)}</textarea>
         </div>
       </div>`;
     }).join('')
@@ -955,17 +968,25 @@ document.addEventListener('click', e=>{
   if(panel.style.display!=='none' && !panel.contains(e.target)) closeInfo();
 });
 
-function onInfoText(wk, idx, val) {
+function onInfoText(wk, idx, val, forceNow) {
   const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
   w.tasks[idx] = toTaskObj(w.tasks[idx]);
   w.tasks[idx].info = val;
-  scheduleSave(wk);
+  if (forceNow) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    saveActiveWeeks();
+  } else {
+    scheduleSave(wk);
+  }
 }
 function onInfoToggle(wk, idx, on) {
   const w=activeWeeks.find(x=>x.num===wk); if(!w) return;
   w.tasks[idx] = toTaskObj(w.tasks[idx]);
   w.tasks[idx].infoOn = on;
-  scheduleSave(wk);
+  clearTimeout(saveTimer);
+  saveTimer = null;
+  saveActiveWeeks();
 }
 function fmtTs(iso){try{return new Date(iso).toLocaleString('en-AU',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}catch{return iso;}}
 function hardRefresh(){window.location.replace(window.location.href.split('?')[0]+'?v='+Date.now());}
