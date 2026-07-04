@@ -604,12 +604,21 @@ function editTemplate(id) {
 async function saveActiveWeeks() {
   if (activeTpl) {
     activeTpl.weeks = JSON.parse(JSON.stringify(activeWeeks));
-    const r = await post({action:"saveTemplate", id:activeTpl.id, name:activeTpl.name, weeks:activeWeeks});
-    // Show save status
+    // Snapshot activeWeeks at save time (before any async gaps)
+    const weeksToSave = JSON.parse(JSON.stringify(activeWeeks));
+    activeTpl.weeks = weeksToSave;
+    const r = await post({action:"saveTemplate", id:activeTpl.id, name:activeTpl.name, weeks:weeksToSave});
     const ss = document.getElementById('save-status');
     if (ss) {
-      if (r && r.ok) { ss.textContent='✓ Saved'; setTimeout(()=>{if(ss)ss.textContent='';},2000); }
-      else if (r && r.error) { ss.style.color='var(--danger)'; ss.textContent='⚠ Save failed — check console'; }
+      if (r && r.ok) {
+        ss.style.color='var(--success)';
+        ss.textContent='✓ Saved';
+        setTimeout(()=>{if(ss)ss.textContent='';},2000);
+      } else if (r && r.error) {
+        ss.style.color='var(--danger)';
+        ss.textContent='⚠ Save failed — check console';
+        console.error('Save error:', r.error);
+      }
     }
     renderTemplates();
   } else if (activeSD) {
@@ -856,9 +865,9 @@ function openReport() {
   const pct  =total?Math.round(done/total*100):0;
   const now  =new Date().toLocaleDateString('en-AU',{day:'2-digit',month:'short',year:'numeric'});
   const inc  =[];
-  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{if(!activeSD.state[w.num+'-'+i]?.checked)inc.push({wk:'W'+w.num,task:t});}));
+  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{if(!activeSD.state[w.num+'-'+i]?.checked)inc.push({wk:'W'+w.num,task:taskText(t)});}));
   const tsrows=[];
-  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{const s=activeSD.state[w.num+'-'+i];if(s?.checked&&s.timestamp)tsrows.push(`<div class="incitem"><span class="incwk">W${w.num}</span><span style="flex:1">${esc(t)}</span><span style="font-size:10px;color:var(--muted);white-space:nowrap;margin-left:8px">${fmtTs(s.timestamp)}</span></div>`);}));
+  activeWeeks.forEach(w=>w.tasks.forEach((t,i)=>{const s=activeSD.state[w.num+'-'+i];if(s?.checked&&s.timestamp)tsrows.push(`<div class="incitem"><span class="incwk">W${w.num}</span><span style="flex:1">${esc(taskText(t))}</span><span style="font-size:10px;color:var(--muted);white-space:nowrap;margin-left:8px">${fmtTs(s.timestamp)}</span></div>`);}));
   document.getElementById('rpbox').innerHTML=`
     <div class="rphd"><div><h2>${esc(activeSD.name)}</h2><p>Planning report — ${now}</p></div>
       <button class="btn btn-g btn-sm" onclick="document.getElementById('rpbg').classList.remove('open')">✕ Close</button></div>
