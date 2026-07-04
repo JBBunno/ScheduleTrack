@@ -378,11 +378,19 @@ async function get(params) {
 }
 
 async function post(body) {
-  // Encode entire JSON body as base64 and send via GET
-  // This avoids all CORS issues with GAS while keeping data intact
-  const json = JSON.stringify(body);
-  const b64  = btoa(unescape(encodeURIComponent(json)));
-  return get({p: b64});
+  try {
+    const json = JSON.stringify(body);
+    // Safe UTF-8 base64 encoding
+    const bytes = new TextEncoder().encode(json);
+    const binStr = Array.from(bytes, b=>String.fromCharCode(b)).join('');
+    const b64 = btoa(binStr);
+    const result = await get({p: b64});
+    if (result.error) console.error('GAS error:', result.error, '| action:', body.action);
+    return result;
+  } catch(e) {
+    console.error('post() failed:', e.message, '| action:', body.action);
+    return {error: e.message};
+  }
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
@@ -582,7 +590,7 @@ function editTemplate(id) {
   activeSD   = null;
   activeWeeks = JSON.parse(JSON.stringify(tpl.weeks));
   document.getElementById('trk-title').textContent = tpl.name+' (template)';
-  document.getElementById('trk-meta').textContent  = 'Editing template — changes apply to new shutdowns only';
+  document.getElementById('trk-meta').innerHTML = 'Editing template — changes apply to new shutdowns only &nbsp;<span id="save-status" style="color:var(--success);font-size:11px;font-weight:500"></span>';
   document.getElementById('trk-acts').style.display='none';
   showView('track');
   document.getElementById('s-done').textContent='–';
@@ -596,7 +604,13 @@ function editTemplate(id) {
 async function saveActiveWeeks() {
   if (activeTpl) {
     activeTpl.weeks = JSON.parse(JSON.stringify(activeWeeks));
-    await post({action:"saveTemplate", id:activeTpl.id, name:activeTpl.name, weeks:activeWeeks});
+    const r = await post({action:"saveTemplate", id:activeTpl.id, name:activeTpl.name, weeks:activeWeeks});
+    // Show save status
+    const ss = document.getElementById('save-status');
+    if (ss) {
+      if (r && r.ok) { ss.textContent='✓ Saved'; setTimeout(()=>{if(ss)ss.textContent='';},2000); }
+      else if (r && r.error) { ss.style.color='var(--danger)'; ss.textContent='⚠ Save failed — check console'; }
+    }
     renderTemplates();
   } else if (activeSD) {
     activeSD.weeks = JSON.parse(JSON.stringify(activeWeeks));
